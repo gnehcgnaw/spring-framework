@@ -164,7 +164,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	/** Unique id for this context, if any. */
 	private String id = ObjectUtils.identityToString(this);
 
-	/** Display name. */
+	/** ApplicationContext Display name. */
 	private String displayName = ObjectUtils.identityToString(this);
 
 	/** Parent context. */
@@ -511,13 +511,27 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		return this.applicationListeners;
 	}
 
+	/**
+	 * 接口在${@link ConfigurableApplicationContext#refresh() }中
+	 *
+	 * @throws BeansException
+	 * @throws IllegalStateException
+	 */
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
+			/**
+			 * 准备刷新上下文环境
+			 * 	1. 设置 context 启动时间
+			 * 	2. 设置 context 的当前状态
+			 *  3. 初始化 context environment 中占位符
+			 *  4. 对属性进行必要的验证
+			 */
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
+			// 创建并实例化 BeanFactory
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
@@ -577,12 +591,19 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
+	 * 准备此上下文以进行刷新：
+	 * 		1. 设置其启动日期；(startupDate)
+	 *	 	2. 设置context当前状态(closed)和活动标志(active)；
+	 *	 	3. 以及执行属性源的任何初始化。
+	 *	 	4. 对属性进行必要的验证
 	 * Prepare this context for refreshing, setting its startup date and
 	 * active flag as well as performing any initialization of property sources.
 	 */
 	protected void prepareRefresh() {
 		// Switch to active.
+		// 设置启动时间
 		this.startupDate = System.currentTimeMillis();
+		// 设置context 当前状态
 		this.closed.set(false);
 		this.active.set(true);
 
@@ -596,10 +617,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Initialize any placeholder property sources in the context environment.
+		// 初始化context environment（上下文环境）中的占位符属性来源 （Web环境下会有具体的实现类，有具体的方法体可以执行，不然就是个空方法）
 		initPropertySources();
 
 		// Validate that all properties marked as required are resolvable:
 		// see ConfigurablePropertyResolver#setRequiredProperties
+		// 对属性进行必要的验证
 		getEnvironment().validateRequiredProperties();
 
 		// Store pre-refresh ApplicationListeners...
@@ -633,7 +656,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #getBeanFactory()
 	 */
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
+		// 刷新BeanFactory
 		refreshBeanFactory();
+		// 获取BeanFactory
 		return getBeanFactory();
 	}
 

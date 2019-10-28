@@ -59,6 +59,12 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 
 
 	/**
+	 * AnnotationConfigApplicationContext的父类是GeneriApplicationContext,子类在初始化的时候，首先要初始化父类，
+	 * 所以要先看${@link GenericApplicationContext#GenericApplicationContext()},在GenericApplicationConext的无参构造中，初始化了一个{@link DefaultListableBeanFactory};
+	 *
+	 * 因此，此无参构造的功能就是填充AnnotationConfigApplicationContext,并初始化AnnotaiedBeanDefinitionReader(被注解的Bean定义读取器和)和ClassPathDefinitionScanner(类路径bean定义扫描器)
+	 *
+	 *
 	 * Create a new AnnotationConfigApplicationContext that needs to be populated
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 */

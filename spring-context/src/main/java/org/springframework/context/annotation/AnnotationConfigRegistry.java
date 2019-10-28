@@ -25,6 +25,7 @@ package org.springframework.context.annotation;
  */
 public interface AnnotationConfigRegistry {
 
+
 	/**
 	 * Register one or more component classes to be processed.
 	 * <p>Calls to {@code register} are idempotent; adding the same
