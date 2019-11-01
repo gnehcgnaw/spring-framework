@@ -21,6 +21,8 @@ import java.lang.reflect.Constructor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
@@ -95,6 +97,8 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 
 	private final DefaultListableBeanFactory beanFactory;
 
+	protected final Log logger = LogFactory.getLog(getClass());
+
 	@Nullable
 	private ResourceLoader resourceLoader;
 
@@ -109,6 +113,7 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 	 * @see #refresh
 	 */
 	public GenericApplicationContext() {
+		logger.info("GenericApplicationContext constructor execution");
 		this.beanFactory = new DefaultListableBeanFactory();
 	}
 

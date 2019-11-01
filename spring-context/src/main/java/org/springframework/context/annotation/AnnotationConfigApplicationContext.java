@@ -18,7 +18,10 @@ package org.springframework.context.annotation;
 
 import java.util.function.Supplier;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.support.GenericApplicationContext;
@@ -57,18 +60,29 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 
 	private final ClassPathBeanDefinitionScanner scanner;
 
-
+	protected final Log logger = LogFactory.getLog(getClass());
 	/**
-	 * AnnotationConfigApplicationContext的父类是GeneriApplicationContext,子类在初始化的时候，首先要初始化父类，
-	 * 所以要先看${@link GenericApplicationContext#GenericApplicationContext()},在GenericApplicationConext的无参构造中，初始化了一个{@link DefaultListableBeanFactory};
-	 *
-	 * 因此，此无参构造的功能就是填充AnnotationConfigApplicationContext,并初始化AnnotaiedBeanDefinitionReader(被注解的Bean定义读取器和)和ClassPathDefinitionScanner(类路径bean定义扫描器)
-	 *
+	 * AnnotationConfigApplicationContext的继承关系如下所示：
+	 * 		1. ${@link GenericApplicationContext}
+	 * 			2. ${@link org.springframework.context.support.AbstractApplicationContext }
+	 * 				3. ${@link org.springframework.core.io.DefaultResourceLoader}	,
+	 * 		故初始化的过程是 3 -》2 -》1 ——》AnnotationConfigApplicationContext
+	 * 其中最重要的是在GenericApplicationConext的无参构造中，初始化了一个bean的工厂{@link DefaultListableBeanFactory};
 	 *
 	 * Create a new AnnotationConfigApplicationContext that needs to be populated
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 */
 	public AnnotationConfigApplicationContext() {
+		logger.info("AnnotationConfigApplicationContext constructor execution");
+		/**
+		 * 发现在初始化AnnotatedBeanDefinitionReader的时候需要一个注册器，而传入的值是this ，那么表明 AnnotationConfigApplicationContext肯定是注册器的一个实现i类，
+		 * 通过查看AnnotationConfigApplicationContext的接口，发现如下所示：
+		 * 		 ${@link AnnotationConfigRegistry }继承了${@link GenericApplicationContext} ,
+		 * 		 而GenericApplicationContext实现了${@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
+		 */
+		if (this instanceof BeanDefinitionRegistry){
+			logger.info("AnnotationConfigApplicationContext is ths implementation class of  BeanDefinitionRegistry");
+		}
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}

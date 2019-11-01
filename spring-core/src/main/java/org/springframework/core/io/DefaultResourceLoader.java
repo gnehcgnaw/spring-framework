@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -54,6 +56,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 
 	private final Map<Class<?>, Map<Resource, ?>> resourceCaches = new ConcurrentHashMap<>(4);
 
+	protected final Log logger = LogFactory.getLog(getClass());
 
 	/**
 	 * Create a new DefaultResourceLoader.
@@ -62,6 +65,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 	 * @see java.lang.Thread#getContextClassLoader()
 	 */
 	public DefaultResourceLoader() {
+		logger.info("DefaultResourceLoader constructor execution");
 		this.classLoader = ClassUtils.getDefaultClassLoader();
 	}
 
