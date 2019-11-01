@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
  * @since : 2019/10/22 09:49
  */
 @Configuration
-@ComponentScan(basePackages = {"red.reksai.dao.*"})
+@ComponentScan(basePackages = {"red.reksai.*"})
 public class AppConfig {
 
 }
