@@ -874,6 +874,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 
 	/**
 	 * Return if there are method overrides defined for this bean.
+	 * 如果有为此bean定义的方法重写，则返回。
 	 * @since 5.0.2
 	 */
 	public boolean hasMethodOverrides() {

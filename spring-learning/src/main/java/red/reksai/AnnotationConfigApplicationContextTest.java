@@ -1,14 +1,19 @@
 package red.reksai;
 
+import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
+import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import red.reksai.config.AppConfig;
 import red.reksai.dao.UserDao;
+
+import java.util.function.Supplier;
 
 /**
  *
  * @author : <a href="mailto:gnehcgnaw@gmail.com">gnehcgnaw</a>
  * @since : 2019/10/22 09:49
  */
+@SuppressWarnings("all")
 public class AnnotationConfigApplicationContextTest {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext annotationConfigApplicationContext = new AnnotationConfigApplicationContext();

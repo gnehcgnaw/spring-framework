@@ -218,22 +218,26 @@ public class AnnotatedBeanDefinitionReader {
 	 */
 	<T> void doRegisterBean(Class<T> beanClass, @Nullable Supplier<T> instanceSupplier, @Nullable String name,
 			@Nullable Class<? extends Annotation>[] qualifiers, BeanDefinitionCustomizer... definitionCustomizers) {
-		//创建注解泛型beanDefinition
+		//将传进来的普通的beanClass包装成AnnotatedGenericBeanDefinition，（这个地方可以打断点观看复制情况，以及AnnotatedGenericBeanDefinition类的继承情况。）
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
-		//跳过条件选择器
+		//判断是否跳过注册，根据的是是否包含@Conditional，如果包含，要根据赋值情况去处理那些bean是要跳过不需要注册的。
 		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
 			return;
 		}
 		//设置实例提供者
 		abd.setInstanceSupplier(instanceSupplier);
-		//解析作用域
+		//解析作用域，默认情况是scopeName= "singleton" ,scopeProxyMode = "NO"（参看AnnotationScopeMetadataResolver#resolveScopeMetadata。）
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
-		//设置作用域
+		//设置bean定义的作用域
 		abd.setScope(scopeMetadata.getScopeName());
-		//生成bean名称
+		/*
+		 *	生成bean名称，bean名称的生成规则是由专门接口的，它是BeanNameGenerator，假如我们想要改变spring对于bean名称的生成规则只需要实现BeanNameGenerator，
+		 *	然后使用"annotationConfigApplicationContext.setBeanNameGenerator(myBeanNameGenerator);"进行设定。
+		 */
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
-		//处理通用定义注解
+		//处理通用型的注解，这些直接包括@Lazy ,@Primary ,@DependsOn ,@Role ,@Description ,如果没有定义就赋予默认值
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
+		//判断注解是否有限定符，并赋值
 		if (qualifiers != null) {
 			for (Class<? extends Annotation> qualifier : qualifiers) {
 				if (Primary.class == qualifier) {
@@ -247,10 +251,11 @@ public class AnnotatedBeanDefinitionReader {
 				}
 			}
 		}
+		//关于BeanDefinitionCustomizer的理解，参看red.reksai.beandefinitioncustomizer.BeanDefinitionCustomizerTest
 		for (BeanDefinitionCustomizer customizer : definitionCustomizers) {
 			customizer.customize(abd);
 		}
-		//创建BeanDefinitionHolder
+		//创建BeanDefinitionHolder，BeanDefinitionHolder其实就是对beanDefinition、beanName 和 aliases的封装，是为了后续传递方便而已，没有其他的用途
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 		//注册bean定义

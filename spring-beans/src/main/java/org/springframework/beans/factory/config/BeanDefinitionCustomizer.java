@@ -17,6 +17,11 @@
 package org.springframework.beans.factory.config;
 
 /**
+ * Spring 5 支持在应用程序上下文中以函数式方式注册 bean。简单地说，您可以通过在 GenericApplicationContext 类中定义的一个新 registerBean() 方法重载来完成。
+ * registerBean() API 可以接收两种类型的函数式接口作为参数：
+ * 		{@link org.springframework.context.support.GenericApplicationContext#registerBean(Class, BeanDefinitionCustomizer...)}
+ *  	{@link org.springframework.context.support.GenericApplicationContext#registerBean(String, Class, BeanDefinitionCustomizer...)}
+ *  这个参数是一个函数式回调，我们可以使用它来设置 bean 属性，如 autowire-candidate 标志或 primary 标志。
  * Callback for customizing a given bean definition.
  * Designed for use with a lambda expression or method reference.
  *
