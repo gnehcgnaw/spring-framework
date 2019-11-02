@@ -55,6 +55,9 @@ public class AnnotatedGenericBeanDefinition extends GenericBeanDefinition implem
 	 */
 	public AnnotatedGenericBeanDefinition(Class<?> beanClass) {
 		setBeanClass(beanClass);
+		/**
+		 * {@link #metadata}对应的是{@link red.reksai.config.AppConfig}中的@Configuration和@ComponentScan(basePackages = {"red.reksai.*"})
+		 */
 		this.metadata = new StandardAnnotationMetadata(beanClass, true);
 	}
 

@@ -19,6 +19,8 @@ package org.springframework.core.type;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -34,14 +36,17 @@ public class StandardClassMetadata implements ClassMetadata {
 
 	private final Class<?> introspectedClass;
 
+	protected Log logger = LogFactory.getLog(getClass());
 
 	/**
 	 * Create a new StandardClassMetadata wrapper for the given Class.
+	 * 为给定的类创建一个标准类元数据
 	 * @param introspectedClass the Class to introspect
 	 */
 	public StandardClassMetadata(Class<?> introspectedClass) {
 		Assert.notNull(introspectedClass, "Class must not be null");
 		this.introspectedClass = introspectedClass;
+		logger.info("StandardClassMetadata constructor execution");
 	}
 
 	/**

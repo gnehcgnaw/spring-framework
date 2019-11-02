@@ -165,6 +165,7 @@ public abstract class BeanDefinitionReaderUtils {
 		// Register bean definition under primary name.
 		String beanName = definitionHolder.getBeanName();
 		/**
+		 * 注册bean定义
 		 * ${@link DefaultListableBeanFactory#registerBeanDefinition(String, BeanDefinition)}
 		 */
 		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());

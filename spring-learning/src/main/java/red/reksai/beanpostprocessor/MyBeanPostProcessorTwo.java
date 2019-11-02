@@ -16,7 +16,7 @@ import red.reksai.dao.UserDao;
 public class MyBeanPostProcessorTwo implements BeanPostProcessor , PriorityOrdered {
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		if (("userDaoImpl").equals(beanName)){
+		if (("testUserDaoImpl").equals(beanName)){
 			System.out.println("two before");
 			// todo  e.g. Proxy.newProxyInstance();
 

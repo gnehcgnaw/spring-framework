@@ -12,6 +12,10 @@ import red.reksai.dao.UserDao;
 public class AnnotationConfigApplicationContextTest {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext annotationConfigApplicationContext = new AnnotationConfigApplicationContext();
+		/**
+		 * 	在手动调用${@link AnnotationConfigApplicationContext#register(Class[])}时的时候，
+		 * 	如果不执行刷新操作，是不会将@ComponentScan下定义的扫描包中定义的bean注册到beanDefinitionMap中。
+		 */
 		annotationConfigApplicationContext.register(AppConfig.class);
 		annotationConfigApplicationContext.refresh();
 		UserDao userDao = annotationConfigApplicationContext.getBean(UserDao.class);

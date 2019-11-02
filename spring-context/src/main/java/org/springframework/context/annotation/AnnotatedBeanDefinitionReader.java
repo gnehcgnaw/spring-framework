@@ -127,6 +127,7 @@ public class AnnotatedBeanDefinitionReader {
 
 
 	/**
+	 * 这是一个幂等性的操作，多次添加同一个组件类没有额外的效果
 	 * Register one or more component classes to be processed.
 	 * <p>Calls to {@code register} are idempotent; adding the same
 	 * component class more than once has no additional effect.
@@ -134,7 +135,9 @@ public class AnnotatedBeanDefinitionReader {
 	 * e.g. {@link Configuration @Configuration} classes
 	 */
 	public void register(Class<?>... componentClasses) {
+		//循环遍历，将添加的组件类注册为bean
 		for (Class<?> componentClass : componentClasses) {
+			//将组件类注册为bean
 			registerBean(componentClass);
 		}
 	}
@@ -221,7 +224,7 @@ public class AnnotatedBeanDefinitionReader {
 		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
 			return;
 		}
-
+		//设置实例提供者
 		abd.setInstanceSupplier(instanceSupplier);
 		//解析作用域
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);

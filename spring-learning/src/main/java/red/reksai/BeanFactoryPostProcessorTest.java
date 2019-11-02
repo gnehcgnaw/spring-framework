@@ -14,8 +14,8 @@ import red.reksai.dao.OrderDao;
 public class BeanFactoryPostProcessorTest {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext annotationConfigApplicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
-		OrderDao orderDao1 = (OrderDao) annotationConfigApplicationContext.getBean("orderDaoImpl");
-		OrderDao orderDao2 = (OrderDao) annotationConfigApplicationContext.getBean("orderDaoImpl");
+		OrderDao orderDao1 = (OrderDao) annotationConfigApplicationContext.getBean("testOrderDaoImpl");
+		OrderDao orderDao2 = (OrderDao) annotationConfigApplicationContext.getBean("testOrderDaoImpl");
 		//输出结果是false ，说明插手成功
 		System.out.println(orderDao1.hashCode()==orderDao2.hashCode());
 	}
