@@ -8,7 +8,7 @@ import red.reksai.dao.UserDao;
  * @author : <a href="mailto:gnehcgnaw@gmail.com">gnehcgnaw</a>
  * @since : 2019/10/22 09:49
  */
-public class Main {
+public class AnnotationConfigApplicationContextTest {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext annotationConfigApplicationContext = new AnnotationConfigApplicationContext();
 		annotationConfigApplicationContext.register(AppConfig.class);

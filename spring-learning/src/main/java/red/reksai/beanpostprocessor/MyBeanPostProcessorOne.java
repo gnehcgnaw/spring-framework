@@ -9,6 +9,9 @@ import red.reksai.dao.UserDao;
 
 /**
  * 自定义后置处理器
+ *
+ * @see PriorityOrdered	设置执行顺序
+ * @see org.springframework.core.Ordered 设置执行顺序 ，PriorityOrdered是Ordered的接口实现
  * @author : <a href="mailto:gnehcgnaw@gmail.com">gnehcgnaw</a>
  * @since : 2019/11/1 01:22
  */
