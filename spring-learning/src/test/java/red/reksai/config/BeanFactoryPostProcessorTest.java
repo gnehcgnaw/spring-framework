@@ -1,7 +1,7 @@
-package red.reksai.beanfactorypostprocessor;
+package red.reksai.config;
 
+import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import red.reksai.config.AppConfig;
 import red.reksai.dao.OrderDao;
 
 /**
@@ -12,7 +12,8 @@ import red.reksai.dao.OrderDao;
  * @see red.reksai.beanfactorypostprocessor.MyBeanFactoryPostProcessor
  */
 public class BeanFactoryPostProcessorTest {
-	public static void main(String[] args) {
+	@Test
+	public void test1() {
 		AnnotationConfigApplicationContext annotationConfigApplicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
 		OrderDao orderDao1 = (OrderDao) annotationConfigApplicationContext.getBean("testOrderDaoImpl");
 		OrderDao orderDao2 = (OrderDao) annotationConfigApplicationContext.getBean("testOrderDaoImpl");

@@ -1,7 +1,9 @@
-package red.reksai.beandefinitioncustomizer;
+package red.reksai.config;
 
+import org.junit.Test;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import red.reksai.beandefinitioncustomizer.MyServcie;
 
 /**
  *
@@ -15,7 +17,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * @since : 2019/11/3 01:54
  */
 public class BeanDefinitionCustomizerTest {
-	public static void main(String[] args) {
+	@Test
+	public void test1() {
 		AnnotationConfigApplicationContext annotationConfigApplicationContext = new AnnotationConfigApplicationContext();
 		annotationConfigApplicationContext.registerBean(MyServcie.class,()->new MyServcie());
 		annotationConfigApplicationContext.registerBean("myCallbackService", MyServcie.class,

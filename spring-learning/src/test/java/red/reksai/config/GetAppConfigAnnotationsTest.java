@@ -23,5 +23,4 @@ public class GetAppConfigAnnotationsTest {
 			//@org.springframework.context.annotation.ComponentScan(scopeResolver=class org.springframework.context.annotation.AnnotationScopeMetadataResolver, lazyInit=false, resourcePattern=**/*.class, useDefaultFilters=true, excludeFilters=[], scopedProxy=DEFAULT, basePackageClasses=[], nameGenerator=interface org.springframework.beans.factory.support.BeanNameGenerator, basePackages=[red.reksai.*], value=[], includeFilters=[])
 		}
 	}
-
 }

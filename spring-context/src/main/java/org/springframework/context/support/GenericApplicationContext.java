@@ -81,6 +81,8 @@ import org.springframework.util.Assert;
  * definition formats. The equivalent in a web environment is
  * {@link org.springframework.web.context.support.XmlWebApplicationContext}.
  *
+ *
+ * 对于应该以可刷新方式读取特殊bean定义格式的自定义应用程序上下文实现，请考虑从{@link AbstractRefreshableApplicationContext}基类派生*。
  * <p>For custom application context implementations that are supposed to read
  * special bean definition formats in a refreshable manner, consider deriving
  * from the {@link AbstractRefreshableApplicationContext} base class.
@@ -258,9 +260,13 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 
 	//---------------------------------------------------------------------
 	// Implementations of AbstractApplicationContext's template methods
+	//AbstractApplicationContext模板方法的实现
 	//---------------------------------------------------------------------
 
 	/**
+	 *
+	 * 什么也不做：我们拥有一个内部BeanFactory，依赖调用方通过我们的公共方法（或BeanFactory的方法）注册bean
+	 * @see #registerBeanDefinition
 	 * Do nothing: We hold a single internal BeanFactory and rely on callers
 	 * to register beans through our public methods (or the BeanFactory's).
 	 * @see #registerBeanDefinition
@@ -319,6 +325,7 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 
 	//---------------------------------------------------------------------
 	// Implementation of BeanDefinitionRegistry
+	//BeanDefinitionRegistry的实现
 	//---------------------------------------------------------------------
 
 	@Override
