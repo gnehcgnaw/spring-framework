@@ -15,5 +15,12 @@ dependencies {
     compile(project(":spring-core"))
     compile(project(":spring-aop"))
     compile(project(":spring-context"))
+    compile(project(":spring-jdbc"))
+    // https://mvnrepository.com/artifact/org.mybatis/mybatis
+    compile group: 'org.mybatis', name: 'mybatis', version: '3.5.3'
+    // https://mvnrepository.com/artifact/org.mybatis/mybatis-spring
+    compile group: 'org.mybatis', name: 'mybatis-spring', version: '2.0.3'
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.18'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
