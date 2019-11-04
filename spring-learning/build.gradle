@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'org.springframework'
-version '5.1.11.BUILD-SNAPSHOT'
+version '5.1.12.BUILD-SNAPSHOT'
 
 
 repositories {
