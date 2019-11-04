@@ -477,8 +477,17 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		return getBeanNamesForType(type, true, true);
 	}
 
+	/**
+	 * 通过类型获取符合bean的beanNames的数组
+	 * @param type
+	 * @param includeNonSingletons 是否包含非单例
+	 * @param allowEagerInit 允许急于初始化
+	 * @return String[]
+	 */
 	@Override
 	public String[] getBeanNamesForType(@Nullable Class<?> type, boolean includeNonSingletons, boolean allowEagerInit) {
+
+		//  beanFactory没有被冻结的；|| type =null || 不是急于初始化的。
 		if (!isConfigurationFrozen() || type == null || !allowEagerInit) {
 			return doGetBeanNamesForType(ResolvableType.forRawClass(type), includeNonSingletons, allowEagerInit);
 		}
@@ -506,11 +515,17 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		List<String> result = new ArrayList<>();
 
 		// Check all bean definitions.
+		// 检查所有bean定义。
 		for (String beanName : this.beanDefinitionNames) {
 			// Only consider bean as eligible if the bean name
 			// is not defined as alias for some other bean.
+			//如果未将bean名称定义为其他bean的别名，则仅将bean视为合格
+			/**
+			 * 说白了{@linkplain org.springframework.core.SimpleAliasRegistry#aliasMap 的map}不包含才，进行下一步操作。
+			 */
 			if (!isAlias(beanName)) {
 				try {
+					//根据名称返回合并之后的bean
 					RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
 					// Only check bean definition if it is complete.
 					if (!mbd.isAbstract() && (allowEagerInit ||
@@ -559,6 +574,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 
 		// Check manually registered singletons too.
+		// 也检查手动注册的单例。
 		for (String beanName : this.manualSingletonNames) {
 			try {
 				// In case of FactoryBean, match object created by FactoryBean.

@@ -54,40 +54,60 @@ final class PostProcessorRegistrationDelegate {
 	/**
 	 *
 	 * @param beanFactory
-	 * @param beanFactoryPostProcessors
+	 * @param beanFactoryPostProcessors	自定义的beanFactoryPostProcessors，通过{@link AbstractApplicationContext#addBeanFactoryPostProcessor(BeanFactoryPostProcessor)}添加的。
 	 */
 	public static void invokeBeanFactoryPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
 		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
+		// todo 暂且不知这是作什么的，继续往下看
 		Set<String> processedBeans = new HashSet<>();
-
+		//首先判断传入的beanFactory是不是BeanDefinitionRegistry的实例
 		if (beanFactory instanceof BeanDefinitionRegistry) {
+			//转换类型
 			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+			//创建一个BeanFactoryPostProcessor的list集合
 			List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
+			//创建一个BeanDefinitionRegistryPostProcessor的list集合
 			List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
 
+			/**
+			 * 将传进来的bean工厂的后置管理器的list进行遍历，然后加以判断，将不同类型的后置处理器存入指定的list集合：
+			 * 		1. BeanDefinitionRegistryPostProcessor的存入到{@linkplain regularPostProcessors 集合中}；
+			 * 		2. BeanFactoryPostProcessor的存入到{@linkplain registryProcessors 集合中}；
+			 * 	只不过在进行第一步操作的时候要进行一步BeanDefinitionRegistryPostProcessor的相关操作。
+			 */
 			for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
+				// 1.
 				if (postProcessor instanceof BeanDefinitionRegistryPostProcessor) {
 					BeanDefinitionRegistryPostProcessor registryProcessor =
 							(BeanDefinitionRegistryPostProcessor) postProcessor;
 					registryProcessor.postProcessBeanDefinitionRegistry(registry);
 					registryProcessors.add(registryProcessor);
 				}
+				// 2.
 				else {
 					regularPostProcessors.add(postProcessor);
 				}
 			}
 
 			// Do not initialize FactoryBeans here: We need to leave all regular beans
+			// 不要在这里初始化FactoryBeans：我们需要保留所有常规bean
 			// uninitialized to let the bean factory post-processors apply to them!
+			// 未初始化以让bean工厂后处理器应用于它们！
 			// Separate between BeanDefinitionRegistryPostProcessors that implement
+			// 在实现的BeanDefinitionRegistryPostProcessor之间分开
 			// PriorityOrdered, Ordered, and the rest.
+			// 优先顺序，顺序和其他。
+
+			// currentRegistryProcessors用于存放系统自己初始化的BeanDefinitionRegistryPostProcessor
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
+			// 首先，调用实现PriorityOrdered的BeanDefinitionRegistryPostProcessors。
 			String[] postProcessorNames =
 					/**
+					 * 通过类型获取符合bean的beanNames的数组
 					 * {@link DefaultListableBeanFactory#getBeanNamesForType(Class, boolean, boolean)}
 					 */
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
@@ -97,12 +117,16 @@ final class PostProcessorRegistrationDelegate {
 					processedBeans.add(ppName);
 				}
 			}
+			//对后置处理器进行排序
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
+			//将用户自定义的BeanDefinitionRegistryPostProcessor和系统之前自己初始化的进行合并。
 			registryProcessors.addAll(currentRegistryProcessors);
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
+			//已经将currentRegistryProcessors合并到了registryProcessors，所以就可以清理掉这个集合。
 			currentRegistryProcessors.clear();
 
 			// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
+			// 接下来，调用实现Ordered的BeanDefinitionRegistryPostProcessors。
 			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
 				if (!processedBeans.contains(ppName) && beanFactory.isTypeMatch(ppName, Ordered.class)) {
@@ -116,6 +140,7 @@ final class PostProcessorRegistrationDelegate {
 			currentRegistryProcessors.clear();
 
 			// Finally, invoke all other BeanDefinitionRegistryPostProcessors until no further ones appear.
+			// 最后，调用所有其他BeanDefinitionRegistryPostProcessor，直到不再出现。
 			boolean reiterate = true;
 			while (reiterate) {
 				reiterate = false;
@@ -145,6 +170,8 @@ final class PostProcessorRegistrationDelegate {
 
 		// Do not initialize FactoryBeans here: We need to leave all regular beans
 		// uninitialized to let the bean factory post-processors apply to them!
+		//不要在此处初始化FactoryBeans：我们需要保留所有常规bean
+		//未初始化，以使Bean工厂后处理器对其应用！
 		String[] postProcessorNames =
 				beanFactory.getBeanNamesForType(BeanFactoryPostProcessor.class, true, false);
 
@@ -273,7 +300,7 @@ final class PostProcessorRegistrationDelegate {
 	}
 
 	/**
-	 * Invoke the given BeanDefinitionRegistryPostProcessor beans.
+	 * 调用给定的BeanDefinitionRegistryPostProcessor Bean。
 	 */
 	private static void invokeBeanDefinitionRegistryPostProcessors(
 			Collection<? extends BeanDefinitionRegistryPostProcessor> postProcessors, BeanDefinitionRegistry registry) {

@@ -19,6 +19,9 @@ package org.springframework.beans.factory.config;
 import org.springframework.beans.BeansException;
 
 /**
+ *
+ * bean工厂的bean属性处理器，说通俗一些就是可以管理我们的bean工厂内所有的BeanDefinition（未实例化）数据，可以随心所欲的修改属性。
+ * 但是注册BeanFactoryPostProcessor的实例，需要重载。
  * Allows for custom modification of an application context's bean definitions,
  * adapting the bean property values of the context's underlying bean factory.
  *

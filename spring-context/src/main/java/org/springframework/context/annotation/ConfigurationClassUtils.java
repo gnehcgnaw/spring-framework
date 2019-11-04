@@ -189,6 +189,7 @@ abstract class ConfigurationClassUtils {
 	/**
 	 * Determine whether the given bean definition indicates a full {@code @Configuration}
 	 * class, through checking {@link #checkConfigurationClassCandidate}'s metadata marker.
+	 * 通过检查{@link #checkConfigurationClassCandidate}的元数据标记，确定给定的b​​ean定义是否表示完整的{@code @Configuration}类
 	 */
 	public static boolean isFullConfigurationClass(BeanDefinition beanDef) {
 		return CONFIGURATION_CLASS_FULL.equals(beanDef.getAttribute(CONFIGURATION_CLASS_ATTRIBUTE));
@@ -197,6 +198,7 @@ abstract class ConfigurationClassUtils {
 	/**
 	 * Determine whether the given bean definition indicates a lite {@code @Configuration}
 	 * class, through checking {@link #checkConfigurationClassCandidate}'s metadata marker.
+	 * 通过检查{@link #checkConfigurationClassCandidate}的元数据标记，确定给定的b​​ean定义是否指示精简{@code @Configuration}类。
 	 */
 	public static boolean isLiteConfigurationClass(BeanDefinition beanDef) {
 		return CONFIGURATION_CLASS_LITE.equals(beanDef.getAttribute(CONFIGURATION_CLASS_ATTRIBUTE));

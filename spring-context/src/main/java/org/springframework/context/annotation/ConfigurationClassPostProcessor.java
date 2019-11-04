@@ -215,14 +215,18 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
 	/**
 	 * Derive further bean definitions from the configuration classes in the registry.
+	 * 从注册表中的配置类派生更多的bean定义。
 	 */
 	@Override
 	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
+		//生成注册表的ID
 		int registryId = System.identityHashCode(registry);
+		//判断注册表处理器中是否存在传入的值
 		if (this.registriesPostProcessed.contains(registryId)) {
 			throw new IllegalStateException(
 					"postProcessBeanDefinitionRegistry already called on this post-processor against " + registry);
 		}
+		//判断工厂后置处理器中有没有
 		if (this.factoriesPostProcessed.contains(registryId)) {
 			throw new IllegalStateException(
 					"postProcessBeanFactory already called on this post-processor against " + registry);
@@ -256,14 +260,23 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
 	/**
 	 * Build and validate a configuration model based on the registry of
+	 * 建立并验证基于注册表的 configuration 模型
 	 * {@link Configuration} classes.
 	 */
 	public void processConfigBeanDefinitions(BeanDefinitionRegistry registry) {
 		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
+		//获取注册表中，所有的bean定义名称
 		String[] candidateNames = registry.getBeanDefinitionNames();
 
 		for (String beanName : candidateNames) {
+			//获取BeanDefinition对象
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
+			/**
+			 * 我们看到以下判断主要有两个条件，并且只要其中的几个满足即可：
+			 *	 	1. 判断传入的类是不是完整的配置类；
+			 * 		2. 判断传入的类是不是精简的配置类；
+			 * 注：主要是看类上有没有@Configuration注解，判断当前类是不是配置类。
+			 */
 			if (ConfigurationClassUtils.isFullConfigurationClass(beanDef) ||
 					ConfigurationClassUtils.isLiteConfigurationClass(beanDef)) {
 				if (logger.isDebugEnabled()) {

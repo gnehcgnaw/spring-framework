@@ -20,6 +20,16 @@ import org.springframework.beans.BeansException;
 import org.springframework.lang.Nullable;
 
 /**
+ * Bean后置处理器
+ *
+ * 允许对新的bean实例进行自定义修改的工厂挂钩，
+ * 例如检查标记接口或用代理包装它们。
+ *
+ * ApplicationContexts可以在其bean定义中自动检测beanPostProcessorbean，
+ * 并将其应用于随后创建的任何bean普通bean工厂允许对后处理器进行编程注册，应用于通过该工厂创建的所有bean。
+ *
+ * e.g. {@link red.reksai.beanpostprocessor.MyBeanPostProcessorOne}
+ *
  * Factory hook that allows for custom modification of new bean instances,
  * e.g. checking for marker interfaces or wrapping them with proxies.
  *
@@ -55,6 +65,13 @@ public interface BeanPostProcessor {
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
 	 */
+	/**
+	 * bean初始化方法调用前被调用
+	 * @param bean	需要扩展的bean
+	 * @param beanName	需要扩展的bean的beanName
+	 * @return	扩展之后的bean
+	 * @throws BeansException
+	 */
 	@Nullable
 	default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		return bean;
@@ -80,6 +97,13 @@ public interface BeanPostProcessor {
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
 	 * @see org.springframework.beans.factory.FactoryBean
+	 */
+	/**
+	 * bean初始化方法调用后被调用
+	 * @param bean	需要扩展的bean
+	 * @param beanName	需要扩展的bean的beanName
+	 * @return	扩展之后的bean
+	 * @throws BeansException
 	 */
 	@Nullable
 	default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {

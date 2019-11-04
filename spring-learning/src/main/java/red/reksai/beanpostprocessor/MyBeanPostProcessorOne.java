@@ -22,7 +22,6 @@ public class MyBeanPostProcessorOne implements BeanPostProcessor , PriorityOrder
 		if (("testUserDaoImpl").equals(beanName)){
 			System.out.println("one before");
 			// todo  e.g. Proxy.newProxyInstance();
-
 		}
 		// return 返回被改造之后的bean ，aop就是这样实现的
 		return bean;
