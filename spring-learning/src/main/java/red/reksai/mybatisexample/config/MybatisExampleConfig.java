@@ -15,9 +15,9 @@ import javax.sql.DataSource;
  * @since : 2019/11/5 00:09
  */
 @Configuration
-@ComponentScan(basePackages = "red.reksai.mybatisexample")
+@ComponentScan(basePackages = "red.reksai.mybatisexample.*")
 @MapperScan(basePackages = "red.reksai.mybatisexample.mapper")
-public class MybatisConfig {
+public class MybatisExampleConfig {
 	@Bean
 	public SqlSessionFactory sqlSessionFactory () throws Exception {
 		SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();

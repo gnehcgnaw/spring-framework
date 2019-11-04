@@ -1,7 +1,7 @@
 package red.reksai.mybatisexample;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import red.reksai.mybatisexample.config.MybatisConfig;
+import red.reksai.mybatisexample.config.MybatisExampleConfig;
 import red.reksai.mybatisexample.servcie.QuestionServcie;
 
 /**
@@ -10,7 +10,7 @@ import red.reksai.mybatisexample.servcie.QuestionServcie;
  */
 public class MybatisExampleMain {
 	public static void main(String[] args) {
-		AnnotationConfigApplicationContext annotationConfigApplicationContext = new AnnotationConfigApplicationContext(MybatisConfig.class);
+		AnnotationConfigApplicationContext annotationConfigApplicationContext = new AnnotationConfigApplicationContext(MybatisExampleConfig.class);
 		QuestionServcie questionServcie = annotationConfigApplicationContext.getBean(QuestionServcie.class);
 		System.out.println(questionServcie.selectById(1));
 	}
