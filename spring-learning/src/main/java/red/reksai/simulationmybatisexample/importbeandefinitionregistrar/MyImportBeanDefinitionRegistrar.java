@@ -33,8 +33,8 @@ public class MyImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegi
 		BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(subjectMapper.getClass());
 		GenericBeanDefinition genericBeanDefinition = (GenericBeanDefinition) beanDefinitionBuilder.getBeanDefinition();
 		genericBeanDefinition.getBeanClassName();
+		// $.Proxy.class --> genericBeanDefinition subjectMapper
 		registry.registerBeanDefinition("subjectMapper",genericBeanDefinition);*/
-
 
 		BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(SubjectMapper.class);
 		GenericBeanDefinition genericBeanDefinition = (GenericBeanDefinition) beanDefinitionBuilder.getBeanDefinition();

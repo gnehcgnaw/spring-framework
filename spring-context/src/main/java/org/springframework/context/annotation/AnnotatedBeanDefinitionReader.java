@@ -204,6 +204,7 @@ public class AnnotatedBeanDefinitionReader {
 	}
 
 	/**
+	 * {@link #doRegisterBean(Class, Supplier, String, Class[], BeanDefinitionCustomizer...)}
 	 * Register a bean from the given bean class, deriving its metadata from
 	 * class-declared annotations.
 	 * @param beanClass the class of the bean

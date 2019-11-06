@@ -1,9 +1,7 @@
 package red.reksai.simulationmybatisexample.factorybean;
 
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.stereotype.Component;
 import red.reksai.simulationmybatisexample.handler.MyInvocationHandler;
-import red.reksai.simulationmybatisexample.mapper.SubjectMapper;
 
 import java.lang.reflect.Proxy;
 

@@ -88,28 +88,66 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	}
 
 	/**
+	 * 创建一个AnnotationConfigApplicationContext使用自定义的一个DefaultListableBeanFactory，
+	 * 这个DefaultListableBeanFactory将一直运用于应用的上下文。
 	 * Create a new AnnotationConfigApplicationContext with the given DefaultListableBeanFactory.
 	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
 	 */
 	public AnnotationConfigApplicationContext(DefaultListableBeanFactory beanFactory) {
+		/**
+		 * 为什么会有一句super(beanFactory)呢（{@link GenericApplicationContext#GenericApplicationContext(DefaultListableBeanFactory)}）？
+		 * 因为这个beanFactory是我们自定义传入的，而GenericApplicationContext类中，其实就初始化了一个DefaultListableBeanFactory ，而我们现在要使用自己的，
+		 * 所以要将值覆盖掉。
+		 * 因此调用super(beanFactory)，主要做一下事情：
+		 *	 1. 第一步做的是断言，也就是参数的校验；
+		 * 	 2. {@link GenericApplicationContext#beanFactory} = 传入的beanFactory 。
+		 */
 		super(beanFactory);
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
 	/**
+	 * 由代码我可以发现，其入参是一个可变的配置类的数组，同时我也发现这个构造方法的作用了，其实就是一部到位。
+	 * 什么是一部到位呢?
+	 * 		其实就是初始化AnnotationConfigApplicationContext；
+	 * 		注册配置类；
+	 * 		刷新初始话bean；
+	 * 	这三步同时在此构造方法中一并完成，不用像上面两个构造方法一样，后续还要进行分步调用，手动刷新。
 	 * Create a new AnnotationConfigApplicationContext, deriving bean definitions
 	 * from the given component classes and automatically refreshing the context.
 	 * @param componentClasses one or more component classes &mdash; for example,
 	 * {@link Configuration @Configuration} classes
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
+		/**
+		 * 有参构造不会自动调用无参构造的，那这里为什么要调用无参构造呢？
+		 * 		其实往往，我们在有参构造中调用无参够着，是为了初始化一些参数的值，
+		 * 那会有人问，为什么不在调用有参构造的时候，一并初始化呢？
+		 *		由以下注释掉的渣渣代码，可以看出，我们又多写了两行的冗余代码
+		 *				this.reader = new AnnotatedBeanDefinitionReader(this);
+		 * 				this.scanner = new ClassPathBeanDefinitionScanner(this);
+		 * 			没有this()简洁。
+		 */
 		this();
 		register(componentClasses);
 		refresh();
 	}
 
 	/**
+	 * 自己写的渣渣代码
+	 * @param componentClasses
+	 *//*
+	public AnnotationConfigApplicationContext(Class<?> ... componentClasses ){
+		this.reader = new AnnotatedBeanDefinitionReader(this);
+		this.scanner = new ClassPathBeanDefinitionScanner(this);
+		register(componentClasses);
+		refresh();
+	}*/
+
+	/**
+	 * 这种参数是一个字符串，也就是传入的参数不是一个可变的配置类，我们首先要进行扫描包操作，然后进行刷新，当然了这两步也是在这个
+	 * 构造方法中一并调用的，和{@link #AnnotationConfigApplicationContext(Class[])}差不多。
 	 * Create a new AnnotationConfigApplicationContext, scanning for components
 	 * in the given packages, registering bean definitions for those components,
 	 * and automatically refreshing the context.
@@ -123,7 +161,13 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 
 
 	/**
+	 * 将给定的自定义{@code Environment}传播到底层
+	 * 我们可以不进行自定义环境的设置，因为在AnnotationConfigApplicationContext后续的初始化过程中，spring会去进行如下操作：
+	 * 		{@link AnnotatedBeanDefinitionReader#getOrCreateEnvironment(BeanDefinitionRegistry)}
+	 * 		{@link ClassPathBeanDefinitionScanner#getOrCreateEnvironment(BeanDefinitionRegistry)}
+	 * 也就是说，即便使我们不自定义初始化环境信息，后续也会获取程序运行环境信息，如果没有就添加一个默认的。
 	 * Propagate the given custom {@code Environment} to the underlying
+	 *
 	 * {@link AnnotatedBeanDefinitionReader} and {@link ClassPathBeanDefinitionScanner}.
 	 */
 	@Override
@@ -134,6 +178,8 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	}
 
 	/**
+	 * 设置自定义的BeanNameGenerator
+	 * 当然如果我们没有设置自定义的BeanNameGenerator，Spring也会在后续的初始化过程中进行设置。
 	 * Provide a custom {@link BeanNameGenerator} for use with {@link AnnotatedBeanDefinitionReader}
 	 * and/or {@link ClassPathBeanDefinitionScanner}, if any.
 	 * <p>Default is {@link org.springframework.context.annotation.AnnotationBeanNameGenerator}.
@@ -150,6 +196,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	}
 
 	/**
+	 * 设置ScopeMetadata解析器。
+	 * 但是设置ScopeMetadata解析器必须在调用{@link #register(Class...)}或{@link #scan(String...)}之前，这是为什么呢？
+	 *
 	 * Set the {@link ScopeMetadataResolver} to use for registered component classes.
 	 * <p>The default is an {@link AnnotationScopeMetadataResolver}.
 	 * <p>Any call to this method must occur prior to calls to {@link #register(Class...)}
@@ -163,6 +212,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 
 	//---------------------------------------------------------------------
 	// Implementation of AnnotationConfigRegistry
+	// 以下方法实现的是AnnotationConfigRegistry中的方法
 	//---------------------------------------------------------------------
 
 	/**
@@ -182,6 +232,10 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	}
 
 	/**
+	 * 在指定的基本程序包中执行扫描。
+	 * 这种方法我们其实很少使用，因为我们现在编程大多数情况采用的都是JavaConfig的形式，
+	 * 这个方法很少使用就导致了ClassPathBeanDefinitionScanner很少使用，那么其实bean的注册工作大部分情况都是有
+	 * {@link AnnotatedBeanDefinitionReader#register(Class[])}来完成的。
 	 * Perform a scan within the specified base packages.
 	 * <p>Note that {@link #refresh()} must be called in order for the context
 	 * to fully process the new classes.
@@ -201,6 +255,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	//---------------------------------------------------------------------
 
 	/**
+	 * {@link AnnotationConfigApplicationContext#registerBean(Class, Object...)}
 	 * Register a bean from the given bean class, deriving its metadata from
 	 * class-declared annotations, and optionally providing explicit constructor
 	 * arguments for consideration in the autowiring process.
