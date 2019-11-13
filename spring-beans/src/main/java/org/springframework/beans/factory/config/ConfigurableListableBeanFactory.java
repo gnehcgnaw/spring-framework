@@ -24,6 +24,9 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.lang.Nullable;
 
 /**
+ *
+ * 提供bean definition的解析,注册功能,再对单例来个预加载(解决循环依赖问题).
+ * 貌似我们一般开发就会直接定义这么个接口了事.而不是像Spring这样先根据使用情况细分那么多,到这边再合并
  * Configuration interface to be implemented by most listable bean factories.
  * In addition to {@link ConfigurableBeanFactory}, it provides facilities to
  * analyze and modify bean definitions, and to pre-instantiate singletons.
@@ -149,6 +152,7 @@ public interface ConfigurableListableBeanFactory
 	boolean isConfigurationFrozen();
 
 	/**
+	 * 预加载不是懒加载的单例.用于解决循环依赖问题
 	 * Ensure that all non-lazy-init singletons are instantiated, also considering
 	 * {@link org.springframework.beans.factory.FactoryBean FactoryBeans}.
 	 * Typically invoked at the end of factory setup, if desired.

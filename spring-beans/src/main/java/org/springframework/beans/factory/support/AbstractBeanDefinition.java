@@ -1056,6 +1056,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	}
 
 	/**
+	 * 校验beanDefinition
 	 * Validate this bean definition.
 	 * @throws BeanDefinitionValidationException in case of validation failure
 	 */

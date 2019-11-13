@@ -166,7 +166,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	/** Map from bean name to merged RootBeanDefinition. */
 	private final Map<String, RootBeanDefinition> mergedBeanDefinitions = new ConcurrentHashMap<>(256);
 
-	/** Names of beans that have already been created at least once. */
+	/**
+	 * Names of beans that have already been created at least once.
+	 * 至少已经创建一次的bean的名称。
+	 * */
 	private final Set<String> alreadyCreated = Collections.newSetFromMap(new ConcurrentHashMap<>(256));
 
 	/** Names of beans that are currently in creation. */
@@ -178,6 +181,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * Create a new AbstractBeanFactory.
 	 */
 	public AbstractBeanFactory() {
+		logger.info("AbstractBeanFactory constructor execution");
 	}
 
 	/**
@@ -1626,11 +1630,18 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 	/**
 	 * Check whether this factory's bean creation phase already started,
+	 * 检查该工厂的Bean创建阶段是否已经开始，即，在此期间是否已将任何Bean标记为已创建。
 	 * i.e. whether any bean has been marked as created in the meantime.
 	 * @since 4.2.2
 	 * @see #markBeanAsCreated
 	 */
 	protected boolean hasBeanCreationStarted() {
+		boolean empty = this.alreadyCreated.isEmpty();
+		if (empty){
+			logger.info("alreadyCreated is empty");
+		}else {
+			logger.info("alreadyCreated is not  empty");
+		}
 		return !this.alreadyCreated.isEmpty();
 	}
 

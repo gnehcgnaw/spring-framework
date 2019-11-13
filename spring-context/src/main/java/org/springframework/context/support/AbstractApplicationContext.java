@@ -542,6 +542,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
+			// 准备在这种情况下使用的bean工厂。
 			//
 			/**
 			 * 填充 BeanFactory功能:
@@ -780,7 +781,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 *
 	 */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
-
+		//1. 获取自定义的BeanFactroyPostProcessors
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime

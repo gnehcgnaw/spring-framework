@@ -23,10 +23,7 @@ import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefiniti
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.support.AutowireCandidateQualifier;
-import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.beans.factory.support.*;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.EnvironmentCapable;
 import org.springframework.core.env.StandardEnvironment;
@@ -35,7 +32,8 @@ import org.springframework.util.Assert;
 
 /**
  * Convenient adapter for programmatic registration of bean classes.
- *
+ * 方便的适配器，用于以编程方式注册Bean类。
+ * 	其核心方法是{@link AnnotationConfigApplicationContext#register}
  * <p>This is an alternative to {@link ClassPathBeanDefinitionScanner}, applying
  * the same resolution of annotations but for explicitly registered classes only.
  *
@@ -58,7 +56,7 @@ public class AnnotatedBeanDefinitionReader {
 
 
 	/**
-	 *
+	 * 为给定的注册表创建一个新的AnnotatedBeanDefinitionReader
 	 * Create a new {@code AnnotatedBeanDefinitionReader} for the given registry.
 	 * <p>If the registry is {@link EnvironmentCapable}, e.g. is an {@code ApplicationContext},
 	 * the {@link Environment} will be inherited, otherwise a new
@@ -67,12 +65,14 @@ public class AnnotatedBeanDefinitionReader {
 	 * in the form of a {@code BeanDefinitionRegistry}
 	 * @see #AnnotatedBeanDefinitionReader(BeanDefinitionRegistry, Environment)
 	 * @see #setEnvironment(Environment)
+	 * @see #getOrCreateEnvironment(BeanDefinitionRegistry)
 	 */
 	public AnnotatedBeanDefinitionReader(BeanDefinitionRegistry registry) {
 		this(registry, getOrCreateEnvironment(registry));
 	}
 
 	/**
+	 * @see AnnotatedBeanDefinitionReader#AnnotatedBeanDefinitionReader(BeanDefinitionRegistry); 
 	 * Create a new {@code AnnotatedBeanDefinitionReader} for the given registry,
 	 * using the given {@link Environment}.
 	 * @param registry the {@code BeanFactory} to load bean definitions into,
@@ -265,6 +265,8 @@ public class AnnotatedBeanDefinitionReader {
 
 
 	/**
+	 *
+	 * 如果可能，从给定的注册表中获取环境，否则返回一个新的StandardEnvironment。
 	 * Get the Environment from the given registry if possible, otherwise return a new
 	 * StandardEnvironment.
 	 */

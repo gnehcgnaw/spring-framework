@@ -276,6 +276,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	/**
+	 * 返回此BeanFactory的依赖关系比较器（可以为{@code null}。
 	 * Return the dependency comparator for this BeanFactory (may be {@code null}.
 	 * @since 4.0
 	 */
@@ -910,6 +911,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 		if (beanDefinition instanceof AbstractBeanDefinition) {
 			try {
+				//校验beanDefinition
 				((AbstractBeanDefinition) beanDefinition).validate();
 			}
 			catch (BeanDefinitionValidationException ex) {
@@ -917,7 +919,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 						"Validation of bean definition failed", ex);
 			}
 		}
-		//看看beanDefinitionMap中是否有重复的BeanDefinition
+		/**
+		 * 	看看beanDefinitionMap中是否有重复的BeanDefinition:
+		 * 	严格意义上是没有的，因为这是我们第一次去设置值
+		 */
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
 		if (existingDefinition != null) {
 			if (!isAllowBeanDefinitionOverriding()) {
@@ -966,6 +971,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			//否责出于注册阶段
 			else {
 				// Still in startup registration phase
+				// 仍处于启动注册阶段
 				this.beanDefinitionMap.put(beanName, beanDefinition);
 				this.beanDefinitionNames.add(beanName);
 				removeManualSingletonName(beanName);
@@ -1076,6 +1082,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		clearByTypeCache();
 	}
 
+	/**
+	 *
+	 * @param beanName
+	 */
 	private void removeManualSingletonName(String beanName) {
 		updateManualSingletonNames(set -> set.remove(beanName), set -> set.contains(beanName));
 	}
@@ -1098,7 +1108,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 		}
 		else {
-			// Still in startup registration phase
+			// Still in startup registration phase 仍处于启动注册阶段
 			if (condition.test(this.manualSingletonNames)) {
 				action.accept(this.manualSingletonNames);
 			}

@@ -31,6 +31,11 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringValueResolver;
 
 /**
+ *
+ * 定义BeanFactory的配置.
+ * 这边定义了太多太多的api,比如类加载器,类型转化,属性编辑器,BeanPostProcessor,作用域,bean定义,处理bean依赖关系,合并其他ConfigurableBeanFactory,bean如何销毁.
+ *
+ *
  * Configuration interface to be implemented by most bean factories. Provides
  * facilities to configure a bean factory, in addition to the bean factory
  * client methods in the {@link org.springframework.beans.factory.BeanFactory}
@@ -51,6 +56,11 @@ import org.springframework.util.StringValueResolver;
 public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, SingletonBeanRegistry {
 
 	/**
+	 *
+	 * 定义了两个作用域: 单例和原型.可以通过registerScope来添加.
+	 * SCOPE_SINGLETON,SCOPE_PROTOTYPE
+	 *
+	 *
 	 * Scope identifier for the standard singleton scope: "singleton".
 	 * Custom scopes can be added via {@code registerScope}.
 	 * @see #registerScope
@@ -66,6 +76,8 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 
 
 	/**
+	 * 父容器设置.而且一旦设置了就不让修改
+	 *
 	 * Set the parent of this bean factory.
 	 * <p>Note that the parent cannot be changed: It should only be set outside
 	 * a constructor if it isn't available at the time of factory instantiation.
@@ -77,6 +89,9 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	void setParentBeanFactory(BeanFactory parentBeanFactory) throws IllegalStateException;
 
 	/**
+	 *
+	 * 类加载器设置与获取.默认使用当前线程中的类加载器
+	 *
 	 * Set the class loader to use for loading bean classes.
 	 * Default is the thread context class loader.
 	 * <p>Note that this class loader will only apply to bean definitions
@@ -97,6 +112,8 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	ClassLoader getBeanClassLoader();
 
 	/**
+	 *
+	 * 为了类型匹配,搞个临时类加载器.好在一般情况为null,使用上面定义的标准加载器　
 	 * Specify a temporary ClassLoader to use for type matching purposes.
 	 * Default is none, simply using the standard bean ClassLoader.
 	 * <p>A temporary ClassLoader is usually just specified if
@@ -116,6 +133,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	ClassLoader getTempClassLoader();
 
 	/**
+	 * 是否需要缓存bean metadata,比如bean difinition 和 解析好的classes.默认开启缓存
 	 * Set whether to cache bean metadata such as given bean definitions
 	 * (in merged fashion) and resolved bean classes. Default is on.
 	 * <p>Turn this flag off to enable hot-refreshing of bean definition objects
@@ -131,6 +149,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	boolean isCacheBeanMetadata();
 
 	/**
+	 * 定义用于解析bean definition的表达式解析器
 	 * Specify the resolution strategy for expressions in bean definition values.
 	 * <p>There is no expression support active in a BeanFactory by default.
 	 * An ApplicationContext will typically set a standard expression strategy
@@ -140,6 +159,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	void setBeanExpressionResolver(@Nullable BeanExpressionResolver resolver);
 
 	/**
+	 * 类型转化器
 	 * Return the resolution strategy for expressions in bean definition values.
 	 * @since 3.0
 	 */

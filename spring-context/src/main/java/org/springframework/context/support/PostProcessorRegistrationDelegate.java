@@ -60,6 +60,7 @@ final class PostProcessorRegistrationDelegate {
 			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
 		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
+		// 如果有的话，首先调用BeanDefinitionRegistryPostProcessors。
 		// todo 暂且不知这是作什么的，继续往下看
 		Set<String> processedBeans = new HashSet<>();
 		//首先判断传入的beanFactory是不是BeanDefinitionRegistry的实例
@@ -72,13 +73,15 @@ final class PostProcessorRegistrationDelegate {
 			List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
 
 			/**
+			 *
 			 * 将传进来的bean工厂的后置管理器的list进行遍历，然后加以判断，将不同类型的后置处理器存入指定的list集合：
+			 *
 			 * 		1. BeanDefinitionRegistryPostProcessor的存入到{@linkplain regularPostProcessors 集合中}；
 			 * 		2. BeanFactoryPostProcessor的存入到{@linkplain registryProcessors 集合中}；
 			 * 	只不过在进行第一步操作的时候要进行一步BeanDefinitionRegistryPostProcessor的相关操作。
 			 */
 			for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
-				// 1.
+				// 1.BeanDefinitionRegistryPostProcessor是BeanFactoryPostProcessor的子类
 				if (postProcessor instanceof BeanDefinitionRegistryPostProcessor) {
 					BeanDefinitionRegistryPostProcessor registryProcessor =
 							(BeanDefinitionRegistryPostProcessor) postProcessor;

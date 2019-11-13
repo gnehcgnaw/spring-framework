@@ -21,6 +21,30 @@ import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 
 /**
+ * BeanFactory是Spring bean容器的根接口.
+ * 每个bean都是通过String类型bean name进行标识，并且提供了设计模式单例（singleton）、原型（prototype）的替代实
+ * 现。如果bean name配置为单例（singleton），应用内只会获取到一个实例（always return the same object）。如果配置为
+ * 原型,那么可以实例化好后填充属性(基于用户的配置)。BeanFactory作为应用集中配置管理的地方，极大简便了应用的开发,这
+ * 样开发人员可以集中于处理业务。
+ * 其他接口，例如{@link ListableBeanFactory}和{@link org.springframework.beans.factory.config.ConfigurableBeanFactory}可用于特定目的。
+ *
+ * BeanFactory需要管理bean的生命周期,比如初始化时需要按顺序实现如下接口:
+ * 　　1. BeanNameAware's {@code setBeanName}
+ * 　　2. BeanClassLoaderAware's {@code setBeanClassLoader}
+ * 　　3. BeanFactoryAware's {@code setBeanFactory}
+ * 　　4. ResourceLoaderAware's {@code setResourceLoader}仅对application context有效
+ * 　　5. ApplicationEventPublisherAware's {@code setApplicationEventPublisher}仅对application context有效
+ * 　　6. MessageSourceAware's {@code setMessageSource}仅对application context有效
+ * 　　7. ApplicationContextAware's {@code setApplicationContext}仅对application context有效
+ * 　　8. ServletContextAware's {@code setServletContext}仅对application context有效
+ * 　　9. {@code postProcessBeforeInitialization} methods of BeanPostProcessors
+ * 　　10. InitializingBean's {@code afterPropertiesSet}
+ * 　　11. a custom init-method definition xml中配置的init-method
+ * 　　12. {@code postProcessAfterInitialization} methods of BeanPostProcessors
+ * 还有关闭容器的接口:
+ * 　　1. DisposableBean's {@code destroy}
+ * 　　2. a custom destroy-method definition xml配置中的destroy-method
+ *
  * The root interface for accessing a Spring bean container.
  * This is the basic client view of a bean container;
  * further interfaces such as {@link ListableBeanFactory} and
@@ -116,6 +140,8 @@ import org.springframework.lang.Nullable;
 public interface BeanFactory {
 
 	/**
+	 * 这是用来区分是获取FactoryBean还是FactoryBean的createBean创建的实例.
+	 * 如果&开始则获取FactoryBean;否则获取createBean创建的实例.
 	 * Used to dereference a {@link FactoryBean} instance and distinguish it from
 	 * beans <i>created</i> by the FactoryBean. For example, if the bean named
 	 * {@code myJndiObject} is a FactoryBean, getting {@code &myJndiObject}
