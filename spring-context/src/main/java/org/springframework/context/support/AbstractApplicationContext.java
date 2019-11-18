@@ -39,6 +39,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.support.ResourceEditorRegistrar;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -1182,6 +1183,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	@Override
 	public Object getBean(String name) throws BeansException {
 		assertBeanFactoryActive();
+		/**
+		 * 1. 这个getBeanFactory()拿到的其实是：{@link DefaultListableBeanFactory }
+		 * 2. 这个的getBean(name)的实现对象{@link org.springframework.beans.factory.support.AbstractBeanFactory#getBean(String)}，
+		 *    而这个方法最终调用的是{@link org.springframework.beans.factory.support.AbstractBeanFactory#doGetBean(String, Class, Object[], boolean)}
+		 */
 		return getBeanFactory().getBean(name);
 	}
 

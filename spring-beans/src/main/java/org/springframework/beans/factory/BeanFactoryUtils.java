@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import org.springframework.beans.BeansException;
 import org.springframework.core.ResolvableType;
@@ -72,6 +73,8 @@ public abstract class BeanFactoryUtils {
 	}
 
 	/**
+	 * 返回实际的bean名称，删除工厂引用前缀 ,
+	 * 		详情请参见 {@link org.springframework.beans.factory.BeanFactoryUtilsTests#testTransformedBeanName()}测试用例
 	 * Return the actual bean name, stripping out the factory dereference
 	 * prefix (if any, also stripping repeated factory prefixes if found).
 	 * @param name the name of the bean
@@ -80,9 +83,18 @@ public abstract class BeanFactoryUtils {
 	 */
 	public static String transformedBeanName(String name) {
 		Assert.notNull(name, "'name' must not be null");
+		//判断名称是不是以&符号开始，如果不是，就直接返回。
 		if (!name.startsWith(BeanFactory.FACTORY_BEAN_PREFIX)) {
 			return name;
 		}
+		/**
+		 * 如果名称是不是以&符号开始：
+		 * 		那就把名称前部的所有&符号都删除
+		 * 	例如： &userDao   ---> userDao
+		 * 		  &&&&&&userDao ---> userDao
+		 * 		这里涉及到Java8中Map的新特性
+		 * 	{@link Map#computeIfAbsent(Object, Function)}
+		 */
 		return transformedBeanNameCache.computeIfAbsent(name, beanName -> {
 			do {
 				beanName = beanName.substring(BeanFactory.FACTORY_BEAN_PREFIX.length());

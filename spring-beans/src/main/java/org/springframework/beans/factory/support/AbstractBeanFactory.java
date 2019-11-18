@@ -196,6 +196,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 	//---------------------------------------------------------------------
 	// Implementation of BeanFactory interface
+	// BeanFactory的接口实现
 	//---------------------------------------------------------------------
 
 	@Override
@@ -229,11 +230,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	}
 
 	/**
+	 * 返回一个bean的实例
 	 * Return an instance, which may be shared or independent, of the specified bean.
 	 * @param name the name of the bean to retrieve
 	 * @param requiredType the required type of the bean to retrieve
 	 * @param args arguments to use when creating a bean instance using explicit arguments
 	 * (only applied when creating a new instance as opposed to retrieving an existing one)
+	 *             使用显式参数创建bean实例时要使用的参数（仅在创建新实例而不是检索现有实例时适用）
 	 * @param typeCheckOnly whether the instance is obtained for a type check,
 	 * not for actual use
 	 * @return an instance of the bean
@@ -242,11 +245,19 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	@SuppressWarnings("unchecked")
 	protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
 			@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
-
+		/**
+		 * 根据传入的name转换获取到想要处理的beanName
+		 *
+		 * 这里设置debugs的条件 name.equals("xxx")
+		 */
 		final String beanName = transformedBeanName(name);
+		//定义最终返回的bean
 		Object bean;
 
 		// Eagerly check singleton cache for manually registered singletons.
+		/**
+		 * 	认真检查单例缓存是否有手动注册的单例,即使用{@link org.springframework.beans.factory.config.SingletonBeanRegistry#registerSingleton(String, Object)注册的对象}
+		 */
 		Object sharedInstance = getSingleton(beanName);
 		if (sharedInstance != null && args == null) {
 			if (logger.isTraceEnabled()) {
@@ -258,6 +269,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
 				}
 			}
+
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		}
 
@@ -331,6 +343,15 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 							throw ex;
 						}
 					});
+
+					/**
+					 * 这一路其实都是有{@link DefaultListableBeanFactory}调用的，
+					 * 它父类中有{@link AbstractAutowireCapableBeanFactory#getObjectForBeanInstance(Object, String, String, RootBeanDefinition)},
+					 * 它重写{@link AbstractBeanFactory#getObjectForBeanInstance(Object, String, String, RootBeanDefinition)}中的这个方法，
+					 * 所以这里调用的是getObjectForBeanInstance，是AbstractAutowireCapableBeanFactory的getObjectForBeanInstance 。
+					 *
+					 * {@link AbstractAutowireCapableBeanFactory#getObjectForBeanInstance(Object, String, String, RootBeanDefinition)}
+					 */
 					bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
 				}
 
@@ -380,6 +401,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		}
 
 		// Check if required type matches the type of the actual bean instance.
+		//检查所需的类型是否与实际bean实例的类型匹配。
 		if (requiredType != null && !requiredType.isInstance(bean)) {
 			try {
 				T convertedBean = getTypeConverter().convertIfNecessary(bean, requiredType);
@@ -1039,6 +1061,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	/**
 	 * Return whether the specified prototype bean is currently in creation
 	 * (within the current thread).
+	 * 返回指定的原型bean是否当前正在创建（在当前线程内）
 	 * @param beanName the name of the bean
 	 */
 	protected boolean isPrototypeCurrentlyInCreation(String beanName) {
@@ -1132,6 +1155,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	//---------------------------------------------------------------------
 
 	/**
+	 * 返回Bean名称，如有必要去除工厂取消引用前缀(这里的引用前缀指的是{@link BeanFactory#FACTORY_BEAN_PREFIX},即“&”)，并将别名解析为规范名称。
 	 * Return the bean name, stripping out the factory dereference prefix if necessary,
 	 * and resolving aliases to canonical names.
 	 * @param name the user-specified name
@@ -1658,6 +1682,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			Object beanInstance, String name, String beanName, @Nullable RootBeanDefinition mbd) {
 
 		// Don't let calling code try to dereference the factory if the bean isn't a factory.
+		//判断是否name是否包含&
 		if (BeanFactoryUtils.isFactoryDereference(name)) {
 			if (beanInstance instanceof NullBean) {
 				return beanInstance;
@@ -1670,6 +1695,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// Now we have the bean instance, which may be a normal bean or a FactoryBean.
 		// If it's a FactoryBean, we use it to create a bean instance, unless the
 		// caller actually wants a reference to the factory.
+		//beanInstance不是一个FactoryBean或者name不包含&,就直接返回当前beanInstance
 		if (!(beanInstance instanceof FactoryBean) || BeanFactoryUtils.isFactoryDereference(name)) {
 			return beanInstance;
 		}

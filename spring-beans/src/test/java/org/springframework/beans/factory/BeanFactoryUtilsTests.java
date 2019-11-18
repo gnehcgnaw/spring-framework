@@ -319,4 +319,20 @@ public class BeanFactoryUtilsTests {
 		assertTrue(Arrays.equals(new String[] { "buffer" }, deps));
 	}
 
+	@Test
+	public void testTransformedBeanName(){
+		String name1 = "userDao";
+		String name2 = "&userDao";
+		String name3 = "&&&&xxx&xxxDao";
+		String transformedBeanName1 = BeanFactoryUtils.transformedBeanName(name1);
+		String transformedBeanName2 = BeanFactoryUtils.transformedBeanName(name2);
+		String transformedBeanName3 = BeanFactoryUtils.transformedBeanName(name3);
+		System.out.println(transformedBeanName1); //userDao
+		System.out.println(transformedBeanName2);// userDao
+		System.out.println(transformedBeanName3);// xxx&xxxDao
+
+
+
+	}
+
 }
