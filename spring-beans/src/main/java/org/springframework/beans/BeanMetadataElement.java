@@ -19,6 +19,7 @@ package org.springframework.beans;
 import org.springframework.lang.Nullable;
 
 /**
+ * bean元数据元素
  * Interface to be implemented by bean metadata elements
  * that carry a configuration source object.
  *

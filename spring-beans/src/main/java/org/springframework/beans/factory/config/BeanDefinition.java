@@ -22,7 +22,23 @@ import org.springframework.core.AttributeAccessor;
 import org.springframework.lang.Nullable;
 
 /**
- * BeanDefinition描述了一个bean实例,
+ * BeanDefinition描述了一个bean实例, 它具备的属性和方法都是我们熟悉的，例如：
+ * 类名、scope、属性、构造函数参数列表、依赖的bean、是否是单例类、是否是懒加载等，
+ * 其实就是将Bean的定义信息存储到这个BeanDefinition相应的属性中，
+ * 后面对Bean的操作就直接对BeanDefinition进行，
+ * 例如拿到这个BeanDefinition后，可以根据里面的类名、构造函数、构造函数参数，使用反射进行对象创建。
+ *
+ * {@link BeanDefinition}接口继承了两个接口：
+ * 		1.继承了{@link AttributeAccessor}接口说明它具备处理属性的能力；
+ * 		2.继承了{@link BeanMetadataElement}接口，说明它可以持有bean元数据元素，作用是可以持有XML文件的一个bean标签对应的object。
+ * 问题：
+ * 	1. 类是单继承，例如：classB Extends classA
+ * 	2. 接口可以多继承，例如：Interface3 Extends Interface0, Interface1, interface……。{@link red.reksai.beandefinition.MultipleEXtends}
+ *
+ * 	不允许类多重继承的主要原因是，如果A同时继承B和C，而B和C同时有一个D方法，A如何决定该继承那一个呢？
+ * 	但接口不存在这样的问题，接口全都是抽象方法继承谁都无所谓，所以接口可以继承多个接口， （那到底继承了那个接口的方法呢？？这估计只要研究了JVM才会知道。）
+ *
+ *
  * A BeanDefinition describes a bean instance, which has property values,
  * constructor argument values, and further information supplied by
  * concrete implementations.
@@ -30,7 +46,7 @@ import org.springframework.lang.Nullable;
  * <p>This is just a minimal interface: The main intention is to allow a
  * {@link BeanFactoryPostProcessor} such as {@link PropertyPlaceholderConfigurer}
  * to introspect and modify property values and other bean metadata.
- *
+ * 这只是一个最小的接口：主要目的是允许一个{@link BeanFactoryPostProcessor}，例如{@link PropertyPlaceholderConfigurer} 进行内部检查和修改属性值以及其他bean元数据。
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @since 19.03.2004
@@ -41,6 +57,8 @@ import org.springframework.lang.Nullable;
 public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
+	 * 标准单例作用域的作用域标识符：“ singleton”。
+	 * 请注意，扩展的bean工厂可能支持更多范围。
 	 * Scope identifier for the standard singleton scope: "singleton".
 	 * <p>Note that extended bean factories might support further scopes.
 	 * @see #setScope
@@ -48,6 +66,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	String SCOPE_SINGLETON = ConfigurableBeanFactory.SCOPE_SINGLETON;
 
 	/**
+	 * 标准原型范围的范围标识符：“prototype”。
+	 * 请注意，扩展的bean工厂可能支持更多范围。
 	 * Scope identifier for the standard prototype scope: "prototype".
 	 * <p>Note that extended bean factories might support further scopes.
 	 * @see #setScope
@@ -56,6 +76,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 
 	/**
+	 * 角色提示，指示{@code BeanDefinition}是应用程序的主要部分。通常对应于用户定义的bean。
 	 * Role hint indicating that a {@code BeanDefinition} is a major part
 	 * of the application. Typically corresponds to a user-defined bean.
 	 */
@@ -82,6 +103,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 
 	// Modifiable attributes
+	// 可修改的属性
 
 	/**
 	 * Set the name of the parent definition of this bean definition, if any.
@@ -147,6 +169,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	boolean isLazyInit();
 
 	/**
+	 * 设置该bean依赖于初始化的bean的名称。
+	 * bean工厂将保证这些bean首先被初始化。
 	 * Set the names of the beans that this bean depends on being initialized.
 	 * The bean factory will guarantee that these beans get initialized first.
 	 */
@@ -298,12 +322,14 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Return a human-readable description of this bean definition.
+	 * 返回此bean定义的可读描述。
 	 */
 	@Nullable
 	String getDescription();
 
 
 	// Read-only attributes
+	// 只读属性
 
 	/**
 	 * Return whether this a <b>Singleton</b>, with a single, shared instance
