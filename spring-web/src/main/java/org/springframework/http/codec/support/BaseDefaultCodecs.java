@@ -59,7 +59,7 @@ import org.springframework.util.ClassUtils;
  * @author Rossen Stoyanchev
  * @author Sebastien Deleuze
  */
-class BaseDefaultCodecs implements CodecConfigurer.DefaultCodecs {
+class BaseDefaultCodecs implements CodecConfigurer.DefaultCodecs, CodecConfigurer.DefaultCodecConfig {
 
 	static final boolean jackson2Present;
 
@@ -105,6 +105,24 @@ class BaseDefaultCodecs implements CodecConfigurer.DefaultCodecs {
 	private boolean registerDefaults = true;
 
 
+	BaseDefaultCodecs() {
+	}
+
+	/**
+	 * Create a deep copy of the given {@link BaseDefaultCodecs}.
+	 */
+	protected BaseDefaultCodecs(BaseDefaultCodecs other) {
+		this.jackson2JsonDecoder = other.jackson2JsonDecoder;
+		this.jackson2JsonEncoder = other.jackson2JsonEncoder;
+		this.protobufDecoder = other.protobufDecoder;
+		this.protobufEncoder = other.protobufEncoder;
+		this.jaxb2Decoder = other.jaxb2Decoder;
+		this.jaxb2Encoder = other.jaxb2Encoder;
+		this.maxInMemorySize = other.maxInMemorySize;
+		this.enableLoggingRequestDetails = other.enableLoggingRequestDetails;
+		this.registerDefaults = other.registerDefaults;
+	}
+
 	@Override
 	public void jackson2JsonDecoder(Decoder<?> decoder) {
 		this.jackson2JsonDecoder = decoder;
@@ -140,8 +158,9 @@ class BaseDefaultCodecs implements CodecConfigurer.DefaultCodecs {
 		this.maxInMemorySize = byteCount;
 	}
 
+	@Override
 	@Nullable
-	protected Integer maxInMemorySize() {
+	public Integer maxInMemorySize() {
 		return this.maxInMemorySize;
 	}
 
@@ -150,7 +169,8 @@ class BaseDefaultCodecs implements CodecConfigurer.DefaultCodecs {
 		this.enableLoggingRequestDetails = enable;
 	}
 
-	protected boolean isEnableLoggingRequestDetails() {
+	@Override
+	public boolean isEnableLoggingRequestDetails() {
 		return this.enableLoggingRequestDetails;
 	}
 
