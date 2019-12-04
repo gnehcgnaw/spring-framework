@@ -3,6 +3,7 @@ package red.reksai.beandefinition;
 
 
 /**
+ * 接口的多继承demo
  * @author : <a href="mailto:gnehcgnaw@gmail.com">gnehcgnaw</a>
  * @since : 2019/11/19 11:36
  */

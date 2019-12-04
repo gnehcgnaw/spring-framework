@@ -22,6 +22,9 @@ import org.springframework.core.AttributeAccessor;
 import org.springframework.lang.Nullable;
 
 /**
+ *
+ * java  ---- class ---- Class
+ * spring ---- bean ----- BeanDefinition
  * BeanDefinition描述了一个bean实例, 它具备的属性和方法都是我们熟悉的，例如：
  * 类名、scope、属性、构造函数参数列表、依赖的bean、是否是单例类、是否是懒加载等，
  * 其实就是将Bean的定义信息存储到这个BeanDefinition相应的属性中，
@@ -38,6 +41,16 @@ import org.springframework.lang.Nullable;
  * 	不允许类多重继承的主要原因是，如果A同时继承B和C，而B和C同时有一个D方法，A如何决定该继承那一个呢？
  * 	但接口不存在这样的问题，接口全都是抽象方法继承谁都无所谓，所以接口可以继承多个接口， （那到底继承了那个接口的方法呢？？这估计只要研究了JVM才会知道。）
  *
+ * BeanDefinition是一个接口，是一个抽象的定义，实际使用的是其实现类，如：
+ * 	1. {@link org.springframework.beans.factory.support.GenericBeanDefinition}
+ * 			{@link org.springframework.context.annotation.ScannedGenericBeanDefinition}
+ * 			{@link org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition}
+ * 	2. {@link org.springframework.beans.factory.support.RootBeanDefinition}
+ * 	3. {@link org.springframework.beans.factory.support.ChildBeanDefinition}
+ *
+ * 我们可以通过{@link ConfigurableListableBeanFactory#getBeanDefinition(String)}获取{@link BeanDefinition} 。
+ *
+ * Spring容器启动的过程中，会将类解析成Spring内部的BeanDefinition结构，并将BeanDefinition存储到一个叫DefaultListableBeanFactory中 。
  *
  * A BeanDefinition describes a bean instance, which has property values,
  * constructor argument values, and further information supplied by
@@ -117,6 +130,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	String getParentName();
 
 	/**
+	 * 指定此bean定义的bean类名。
 	 * Specify the bean class name of this bean definition.
 	 * <p>The class name can be modified during bean factory post-processing,
 	 * typically replacing the original class name with a parsed variant of it.

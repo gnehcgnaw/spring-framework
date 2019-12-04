@@ -217,7 +217,8 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 
 	/**
 	 * Register one or more component classes to be processed.
-	 * 注册一个或多个要处理的组件类 ,例如：spring-learning中的${@link red.reksai.dao.UserDao}或者${@link red.reksai.config.AppConfig}
+	 * 注册一个或多个要处理的组件类 ,例如：spring-learning中的${@link red.reksai.dao.UserDao}或者${@link red.reksai.config.AppConfig},
+	 * 换句话说这个方法不仅可以注册配置类，也可以注册单个bean。
 	 * 在注册之后，必须调用{@link #refresh()} 才能完全解析上下文。
 	 * <p>Note that {@link #refresh()} must be called in order for the context
 	 * to fully process the new classes.

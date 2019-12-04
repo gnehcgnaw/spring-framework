@@ -31,6 +31,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 读取被加了注解的类
+ *
  * Convenient adapter for programmatic registration of bean classes.
  * 方便的适配器，用于以编程方式注册Bean类。
  * 	其核心方法是{@link AnnotationConfigApplicationContext#register}
@@ -220,8 +222,20 @@ public class AnnotatedBeanDefinitionReader {
 	<T> void doRegisterBean(Class<T> beanClass, @Nullable Supplier<T> instanceSupplier, @Nullable String name,
 			@Nullable Class<? extends Annotation>[] qualifiers, BeanDefinitionCustomizer... definitionCustomizers) {
 		//将传进来的普通的beanClass包装成AnnotatedGenericBeanDefinition，（这个地方可以打断点观看复制情况，以及AnnotatedGenericBeanDefinition类的继承情况。）
+		/**
+		 * 根据指定的bean创建一个AnnotatedGenericBeanDefinition。
+		 *
+		 * 为什么创建的是一个AnnotatedGenericBeanDefinition呢？
+		 * 		因为在之前传入的beanClass要求是被注解的类。
+		 *
+		 * 这个AnnotatedGenericBeanDefinition可以理解为一个数据结构，包含了类的其他信息，比如一些元信息，是scope，lazy等等。
+		 */
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
-		//判断是否跳过注册，根据的是是否包含@Conditional，如果包含，要根据赋值情况去处理那些bean是要跳过不需要注册的。
+		/**
+		 * 判断是否跳过解析，
+		 * 根据的是是否包含@Conditional，如果包含，要根据赋值情况去处理那些bean是要跳过不需要注册的。
+		 * springboot中去了解{@link Conditional}
+		 */
 		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
 			return;
 		}
@@ -231,14 +245,20 @@ public class AnnotatedBeanDefinitionReader {
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
 		//设置bean定义的作用域
 		abd.setScope(scopeMetadata.getScopeName());
-		/*
-		 *	生成bean名称，bean名称的生成规则是由专门接口的，它是BeanNameGenerator，假如我们想要改变spring对于bean名称的生成规则只需要实现BeanNameGenerator，
-		 *	然后使用"annotationConfigApplicationContext.setBeanNameGenerator(myBeanNameGenerator);"进行设定。
+		/**
+		 *	生成bean名称，bean名称的生成规则是由专门接口的，它是BeanNameGenerator，假如我们想要改变spring对于bean名称的生成规则只需要实现{@link BeanNameGenerator}，
+		 *	然后使用{@link AnnotationConfigApplicationContext#setBeanNameGenerator(BeanNameGenerator)}进行设定。
 		 */
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
 		//处理通用型的注解，这些直接包括@Lazy ,@Primary ,@DependsOn ,@Role ,@Description ,如果没有定义就赋予默认值
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
-		//判断注解是否有限定符，并赋值
+		/**
+		 * 	判断注解是否有其他限定符（@Primary ,@Lazy , @Qualifier），并赋值
+		 * 	但是当前方法是不能被外部调用的，而且这个数组传入的也是null，所以，这段代码目前永远是执行不到的，除非通过反射机制，这段也许是为了后续扩展spring做准备的。
+		 * 	（不知道我这样理解对不对，难道这个后续会调用到吗，菜鸟是在不明白，此问题暂时放置【2019年11月19日15:58:38】）
+		 * 	//todo
+		 *  我在GitHub的spring-framework项目中issues中提出了疑问，不知道有没有为我解决：https://github.com/spring-projects/spring-framework/issues/24021
+		 */
 		if (qualifiers != null) {
 			for (Class<? extends Annotation> qualifier : qualifiers) {
 				if (Primary.class == qualifier) {
@@ -252,14 +272,22 @@ public class AnnotatedBeanDefinitionReader {
 				}
 			}
 		}
+
 		//关于BeanDefinitionCustomizer的理解，参看red.reksai.beandefinitioncustomizer.BeanDefinitionCustomizerTest
 		for (BeanDefinitionCustomizer customizer : definitionCustomizers) {
 			customizer.customize(abd);
 		}
 		//创建BeanDefinitionHolder，BeanDefinitionHolder其实就是对beanDefinition、beanName 和 aliases的封装，是为了后续传递方便而已，没有其他的用途
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
+		/**
+		 * ScopedProxyMode这个知识点比较复杂，需要结合web去理解，可以暂时放一下，等说到springMVC的时候再说【2019年11月19日16:01:12】
+		 * //todo
+		 */
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
-		//注册bean定义
+		/**
+		 * 把上述结构，即definitionHolder注册给registry
+		 * registry是{@link BeanDefinitionRegistry},这个类把BeanDefinition放在一个集合中，这个类就这个作用
+		 */
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}
 
