@@ -40,6 +40,7 @@ import org.springframework.core.codec.ResourceDecoder;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.http.codec.DecoderHttpMessageReader;
 import org.springframework.http.codec.EncoderHttpMessageWriter;
 import org.springframework.http.codec.FormHttpMessageReader;
@@ -61,6 +62,7 @@ import org.springframework.http.codec.xml.Jaxb2XmlEncoder;
 import org.springframework.util.MimeTypeUtils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -132,6 +134,7 @@ public class ServerCodecConfigurerTests {
 	public void maxInMemorySize() {
 		int size = 99;
 		this.configurer.defaultCodecs().maxInMemorySize(size);
+
 		List<HttpMessageReader<?>> readers = this.configurer.getReaders();
 		assertEquals(13, readers.size());
 		assertEquals(size, ((ByteArrayDecoder) getNextDecoder(readers)).getMaxInMemorySize());
@@ -154,6 +157,57 @@ public class ServerCodecConfigurerTests {
 	}
 
 	@Test
+	public void maxInMemorySizeWithCustomCodecs() {
+
+		int size = 99;
+		this.configurer.defaultCodecs().maxInMemorySize(size);
+		this.configurer.registerDefaults(false);
+
+		CodecConfigurer.CustomCodecs customCodecs = this.configurer.customCodecs();
+		customCodecs.register(new ByteArrayDecoder());
+		customCodecs.registerWithDefaultConfig(new ByteArrayDecoder());
+		customCodecs.register(new Jackson2JsonDecoder());
+		customCodecs.registerWithDefaultConfig(new Jackson2JsonDecoder());
+
+		this.configurer.defaultCodecs().enableLoggingRequestDetails(true);
+
+		List<HttpMessageReader<?>> readers = this.configurer.getReaders();
+		assertEquals(-1, ((ByteArrayDecoder) getNextDecoder(readers)).getMaxInMemorySize());
+		assertEquals(size, ((ByteArrayDecoder) getNextDecoder(readers)).getMaxInMemorySize());
+		assertEquals(-1, ((Jackson2JsonDecoder) getNextDecoder(readers)).getMaxInMemorySize());
+		assertEquals(size, ((Jackson2JsonDecoder) getNextDecoder(readers)).getMaxInMemorySize());
+	}
+
+	@Test
+	public void enableRequestLoggingDetails() {
+		this.configurer.defaultCodecs().enableLoggingRequestDetails(true);
+
+		List<HttpMessageReader<?>> readers = this.configurer.getReaders();
+		assertTrue(findCodec(readers, FormHttpMessageReader.class).isEnableLoggingRequestDetails());
+
+		MultipartHttpMessageReader multipartReader = findCodec(readers, MultipartHttpMessageReader.class);
+		assertTrue(multipartReader.isEnableLoggingRequestDetails());
+
+		SynchronossPartHttpMessageReader reader = (SynchronossPartHttpMessageReader) multipartReader.getPartReader();
+		assertTrue(reader.isEnableLoggingRequestDetails());
+	}
+
+	@Test
+	public void enableRequestLoggingDetailsWithCustomCodecs() {
+
+		this.configurer.registerDefaults(false);
+		this.configurer.defaultCodecs().enableLoggingRequestDetails(true);
+
+		CodecConfigurer.CustomCodecs customCodecs = this.configurer.customCodecs();
+		customCodecs.register(new FormHttpMessageReader());
+		customCodecs.registerWithDefaultConfig(new FormHttpMessageReader());
+
+		List<HttpMessageReader<?>> readers = this.configurer.getReaders();
+		assertFalse(((FormHttpMessageReader) readers.get(0)).isEnableLoggingRequestDetails());
+		assertTrue(((FormHttpMessageReader) readers.get(1)).isEnableLoggingRequestDetails());
+	}
+
+	@Test
 	public void cloneConfigurer() {
 		ServerCodecConfigurer clone = this.configurer.clone();
 
@@ -164,37 +218,22 @@ public class ServerCodecConfigurerTests {
 
 		// Clone has the customizations
 
-		HttpMessageReader<?> actualReader = clone.getReaders().stream()
-				.filter(r -> r instanceof MultipartHttpMessageReader)
-				.findFirst()
-				.get();
+		HttpMessageReader<?> actualReader =
+				findCodec(clone.getReaders(), MultipartHttpMessageReader.class);
 
-		Encoder<?> actualEncoder = clone.getWriters().stream()
-				.filter(writer -> writer instanceof ServerSentEventHttpMessageWriter)
-				.map(writer -> ((ServerSentEventHttpMessageWriter) writer).getEncoder())
-				.findFirst()
-				.get();
-
+		ServerSentEventHttpMessageWriter actualWriter =
+				findCodec(clone.getWriters(), ServerSentEventHttpMessageWriter.class);
 
 		assertSame(reader, actualReader);
-		assertSame(encoder, actualEncoder);
+		assertSame(encoder, actualWriter.getEncoder());
 
 		// Original does not have the customizations
 
-		actualReader = this.configurer.getReaders().stream()
-				.filter(r -> r instanceof MultipartHttpMessageReader)
-				.findFirst()
-				.get();
-
-		actualEncoder = this.configurer.getWriters().stream()
-				.filter(writer -> writer instanceof ServerSentEventHttpMessageWriter)
-				.map(writer -> ((ServerSentEventHttpMessageWriter) writer).getEncoder())
-				.findFirst()
-				.get();
-
+		actualReader = findCodec(this.configurer.getReaders(), MultipartHttpMessageReader.class);
+		actualWriter = findCodec(this.configurer.getWriters(), ServerSentEventHttpMessageWriter.class);
 
 		assertNotSame(reader, actualReader);
-		assertNotSame(encoder, actualEncoder);
+		assertNotSame(encoder, actualWriter.getEncoder());
 	}
 
 	private Decoder<?> getNextDecoder(List<HttpMessageReader<?>> readers) {
@@ -211,6 +250,11 @@ public class ServerCodecConfigurerTests {
 		HttpMessageWriter<?> writer = writers.get(this.index.getAndIncrement());
 		assertEquals(EncoderHttpMessageWriter.class, writer.getClass());
 		return ((EncoderHttpMessageWriter<?>) writer).getEncoder();
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T findCodec(List<?> codecs, Class<T> type) {
+		return (T) codecs.stream().filter(type::isInstance).findFirst().get();
 	}
 
 	@SuppressWarnings("unchecked")

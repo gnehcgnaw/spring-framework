@@ -44,7 +44,7 @@ ext {
 	rxjava2Version       = "2.2.15"
 	slf4jVersion         = "1.7.28"	  // spring-jcl + consistent 3rd party deps
 	tiles3Version        = "3.0.8"
-	tomcatVersion        = "9.0.29"
+	tomcatVersion        = "9.0.30"
 	undertowVersion      = "2.0.28.Final"
 
 	gradleScriptDir = "${rootProject.projectDir}/gradle"
@@ -184,7 +184,7 @@ configure(allprojects) { project ->
 		"https://tiles.apache.org/tiles-request/apidocs/",
 		"https://tiles.apache.org/framework/apidocs/",
 		"https://www.eclipse.org/aspectj/doc/released/aspectj5rt-api/",
-		"https://www.ehcache.org/apidocs/2.10.4",
+		"https://www.ehcache.org/apidocs/2.10.4/",
 		"https://www.quartz-scheduler.org/api/2.3.0/",
 		"https://fasterxml.github.io/jackson-core/javadoc/2.9/",
 		"https://fasterxml.github.io/jackson-databind/javadoc/2.9/",
