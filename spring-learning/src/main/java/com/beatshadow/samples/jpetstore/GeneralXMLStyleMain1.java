@@ -3,7 +3,6 @@ package com.beatshadow.samples.jpetstore;
 import com.beatshadow.samples.jpetstore.dao.jpa.JpaAccountDao;
 import com.beatshadow.samples.jpetstore.dao.jpa.JpaItemDao;
 import com.beatshadow.samples.jpetstore.services.PetStoreServiceImpl;
-import org.springframework.beans.factory.config.ServiceLocatorFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.Assert;

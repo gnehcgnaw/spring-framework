@@ -15,4 +15,8 @@
 	<bean id="myClient" class="com.beatshadow.samples.servcielocator.MyClientBean" >
 		<property name="serviceFactory" ref="myServiceFactory"/>
 	</bean>
+
+	<bean id="defaultServiceLocator" class="com.beatshadow.samples.jpetstore.services.DefaultServiceLocator" />
+
+	<bean class="com.beatshadow.samples.jpetstore.services.ServerService" factory-bean="defaultServiceLocator" factory-method="newInstance"/>
 </beans>
