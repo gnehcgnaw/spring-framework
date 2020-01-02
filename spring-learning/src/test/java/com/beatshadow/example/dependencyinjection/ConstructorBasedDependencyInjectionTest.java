@@ -18,10 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConstructorBasedDependencyInjectionTest {
 	private final static DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
-
-	public static void main(String[] args) {
-
-	}
 	@BeforeEach
 	public void setup(){
 		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
