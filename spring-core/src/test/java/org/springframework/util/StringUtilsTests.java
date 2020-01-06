@@ -483,6 +483,15 @@ class StringUtilsTests {
 	}
 
 	@Test
+	void tokenizeToStringArrayFoMultiValueAttributeDelimiters() {
+		// BeanDefinitionParserDelegate.MULTI_VALUE_ATTRIBUTE_DELIMITERS
+		String[] sa = StringUtils.tokenizeToStringArray("a,b , ,c;d,;e ; ,f", ",; ");
+		assertThat(sa.length).isEqualTo(6);
+		assertThat(sa[0].equals("a") && sa[1].equals("b") && sa[2].equals("c")&&sa[3].equals("d")&&sa[4].equals("e")&&sa[5].equals("f")).as("components are correct").isTrue();
+	}
+
+
+	@Test
 	void tokenizeToStringArrayWithNotIgnoreEmptyTokens() {
 		String[] sa = StringUtils.tokenizeToStringArray("a,b , ,c", ",", true, false);
 		assertThat(sa.length).isEqualTo(4);
@@ -744,5 +753,13 @@ class StringUtilsTests {
 		assertThat(StringUtils.parseLocale("invalidvalue_foo")).isEqualTo(new Locale("invalidvalue", "foo"));
 		assertThat(StringUtils.parseLocale("")).isNull();
 	}
+
+	@Test
+	void hasLength(){
+		assertThat(StringUtils.hasLength("")).isFalse();
+		assertThat(StringUtils.hasLength("  ")).isTrue();
+
+	}
+
 
 }

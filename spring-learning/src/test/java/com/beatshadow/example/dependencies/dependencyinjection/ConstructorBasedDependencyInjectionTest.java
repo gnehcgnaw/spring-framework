@@ -1,4 +1,4 @@
-package com.beatshadow.example.dependencyinjection;
+package com.beatshadow.example.dependencies.dependencyinjection;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,13 +23,12 @@ public class ConstructorBasedDependencyInjectionTest {
 		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
 		beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver());
 		//reader.loadBeanDefinitions(new ClassPathResource("constructorBaseDependencyInjection.xml" ,getClass()));
-		reader.loadBeanDefinitions(new ClassPathResource("com.beatshadow.example/dependencyinjection/constructorBaseDependencyInjection.xml"));
+		reader.loadBeanDefinitions(new ClassPathResource("com.beatshadow.example/constructorBaseDependencyInjection.xml"));
 		beanFactory.preInstantiateSingletons();
-		//ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:demo/demo.xml");
 	}
 	@Test
 	public void test(){
-		assertThat(beanFactory.getBean("com.beatshadow.example.dependencyinjection.ThingTwo#0")).isNotNull();
+		assertThat(beanFactory.getBean("com.beatshadow.example.dependencies.dependencyinjection.ThingTwo#0")).isNotNull();
 	}
 
 }
@@ -38,12 +37,12 @@ class SimpleMovieLister {
 
 	private MovieFinder movieFinder;
 
-	// a constructor so that the Spring container can inject a com.beatshadow.example.dependencyinjection.MovieFinder
+	// a constructor so that the Spring container can inject a com.beatshadow.example.dependencies.dependencyinjection.MovieFinder
 	public SimpleMovieLister(MovieFinder movieFinder) {
 		this.movieFinder = movieFinder;
 	}
 
-	// business logic that actually uses the injected com.beatshadow.example.dependencyinjection.MovieFinder is omitted...
+	// business logic that actually uses the injected com.beatshadow.example.dependencies.dependencyinjection.MovieFinder is omitted...
 }
 
 class MovieFinder{

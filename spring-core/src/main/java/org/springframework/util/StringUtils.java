@@ -37,6 +37,12 @@ import java.util.TimeZone;
 import org.springframework.lang.Nullable;
 
 /**
+ * 其他{@link String}实用程序方法，主要供框架内部使用；
+ * 考虑使用<a href="https://commons.apache.org/proper/commons-lang/"> Apache的Commons Lang </a> ，以获得更全面的{@code String}实用程序套件。
+ *
+ * 此类提供了一些简单的功能，这些功能实际上应该由核心Java {@link String}和{@link StringBuilder} 类提供。
+ * 它还提供了易于使用的方法，可以在*分隔的字符串（例如CSV字符串<a href="https://baike.baidu.com/item/CSV/10739?fr=aladdin">CSV百度百科</a>）与集合和数组之间进行转换。
+ *
  * Miscellaneous {@link String} utility methods.
  *
  * <p>Mainly for internal use within the framework; consider
@@ -118,6 +124,8 @@ public abstract class StringUtils {
 	}
 
 	/**
+	 * 检查给定的{@code String}既不是{@code null}也不是长度0。
+	 *
 	 * Check that the given {@code String} is neither {@code null} nor of length 0.
 	 * <p>Note: this method returns {@code true} for a {@code String} that
 	 * purely consists of whitespace.
@@ -154,6 +162,9 @@ public abstract class StringUtils {
 	}
 
 	/**
+	 * 检查给定的{@code String}是否包含实际的文本。
+	 * 如果是"" 、"    "或null会返回false 。
+	 *
 	 * Check whether the given {@code String} contains actual <em>text</em>.
 	 * <p>More specifically, this method returns {@code true} if the
 	 * {@code String} is not {@code null}, its length is greater than 0,
@@ -1111,6 +1122,7 @@ public abstract class StringUtils {
 	}
 
 	/**
+	 *
 	 * Tokenize the given {@code String} into a {@code String} array via a
 	 * {@link StringTokenizer}.
 	 * <p>Trims tokens and omits empty tokens.
@@ -1131,6 +1143,9 @@ public abstract class StringUtils {
 	}
 
 	/**
+	 * 通过{@link StringTokenizer}将给定的{@code String}标记为{@code String}数组。
+	 * @param trimTokens 是否分隔
+	 * @param ignoreEmptyTokens 是否忽略空的分隔符
 	 * Tokenize the given {@code String} into a {@code String} array via a
 	 * {@link StringTokenizer}.
 	 * <p>The given {@code delimiters} string can consist of any number of
@@ -1140,7 +1155,7 @@ public abstract class StringUtils {
 	 * @param str the {@code String} to tokenize (potentially {@code null} or empty)
 	 * @param delimiters the delimiter characters, assembled as a {@code String}
 	 * (each of the characters is individually considered as a delimiter)
-	 * @param trimTokens trim the tokens via {@link String#trim()}
+	 * @param trimTokens trim the tokens via {@link String#trim()}	分隔符
 	 * @param ignoreEmptyTokens omit empty tokens from the result array
 	 * (only applies to tokens that are empty after trimming; StringTokenizer
 	 * will not consider subsequent delimiters as token in the first place).

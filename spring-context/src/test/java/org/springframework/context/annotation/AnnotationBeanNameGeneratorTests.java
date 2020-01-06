@@ -33,6 +33,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Named;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -137,6 +140,64 @@ public class AnnotationBeanNameGeneratorTests {
 		assertThat(beanName).isEqualTo("restController");
 	}
 
+	@Test
+	public void generatorBeanNameForManagedBeanWithName(){
+		BeanDefinitionRegistry registry = new SimpleBeanDefinitionRegistry();
+		AnnotatedBeanDefinition bd = new AnnotatedGenericBeanDefinition(
+				ManagedBeanWithName.class);
+		String beanName = this.beanNameGenerator.generateBeanName(bd, registry);
+		assertThat(beanName).isEqualTo("beatShadow");
+	}
+
+	@Test
+	public void generatorBeanNameForManagedBeanWithBlankName(){
+		BeanDefinitionRegistry registry = new SimpleBeanDefinitionRegistry();
+		AnnotatedBeanDefinition bd = new AnnotatedGenericBeanDefinition(
+				ManagedBeanWithBlankName.class);
+		String beanName = this.beanNameGenerator.generateBeanName(bd, registry);
+		String expectedGeneratedBeanName = this.beanNameGenerator.buildDefaultBeanName(bd);
+		assertThat(beanName).isEqualTo(expectedGeneratedBeanName);
+	}
+
+	@Test
+	public void generatorBeanNameForComposedManagedBean(){
+		BeanDefinitionRegistry registry = new SimpleBeanDefinitionRegistry();
+		AnnotatedBeanDefinition bd = new AnnotatedGenericBeanDefinition(
+				ComposedManagedBean.class);
+		String beanName = this.beanNameGenerator.generateBeanName(bd, registry);
+		String expectedGeneratedBeanName = this.beanNameGenerator.buildDefaultBeanName(bd);
+		assertThat(beanName).isEqualTo(expectedGeneratedBeanName);
+	}
+
+
+	@Test
+	public void generatorBeanNameFormNamedWithName(){
+		BeanDefinitionRegistry registry = new SimpleBeanDefinitionRegistry();
+		AnnotatedBeanDefinition bd = new AnnotatedGenericBeanDefinition(
+				NamedWithName.class);
+		String beanName = this.beanNameGenerator.generateBeanName(bd, registry);
+		assertThat(beanName).isEqualTo("rekSai");
+	}
+
+	@Test
+	public void generatorBeanNameFormNamedWithBlankName(){
+		BeanDefinitionRegistry registry = new SimpleBeanDefinitionRegistry();
+		AnnotatedBeanDefinition bd = new AnnotatedGenericBeanDefinition(
+				NamedWithBlankName.class);
+		String beanName = this.beanNameGenerator.generateBeanName(bd, registry);
+		String expectedGeneratedBeanName = this.beanNameGenerator.buildDefaultBeanName(bd);
+		assertThat(beanName).isEqualTo(expectedGeneratedBeanName);
+	}
+
+	@Test
+	public void generatorBeanNameFormComposedNamed(){
+		BeanDefinitionRegistry registry = new SimpleBeanDefinitionRegistry();
+		AnnotatedBeanDefinition bd = new AnnotatedGenericBeanDefinition(
+				ComposedNamed.class);
+		String beanName = this.beanNameGenerator.generateBeanName(bd, registry);
+		String expectedGeneratedBeanName = this.beanNameGenerator.buildDefaultBeanName(bd);
+		assertThat(beanName).isEqualTo(expectedGeneratedBeanName);
+	}
 
 	@Component("walden")
 	private static class ComponentWithName {
@@ -152,6 +213,35 @@ public class AnnotationBeanNameGeneratorTests {
 
 	@Service("henry")
 	private static class ComponentFromStringMeta {
+	}
+
+	@ManagedBean("beatShadow")
+	private static class ManagedBeanWithName{
+
+	}
+
+	@ManagedBean(" ")
+	private static class ManagedBeanWithBlankName{
+
+	}
+
+	@ManagedBean
+	private static class ComposedManagedBean{
+
+	}
+
+	@Named("rekSai")
+	private static class NamedWithName{
+
+	}
+	@Named(" ")
+	private static class NamedWithBlankName{
+
+	}
+
+	@Named
+	private static class ComposedNamed{
+
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)

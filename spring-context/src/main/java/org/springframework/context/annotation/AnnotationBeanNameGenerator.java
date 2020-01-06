@@ -31,7 +31,15 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.ManagedBean;
+
 /**
+ * `AnnotationBeanNameGenerator`是一个注解`bean`名称生成器，具体可以解析的注解包括：
+ * 1. Spring提供的@Component以及以@Component和@Component派生类作为注解元的类 ，举例： @Component @Repository @Service  @Controller  @RestController;
+ * 2. Java EE 6提供的javax.annotation.ManagedBean注解；
+ * 3. JSR-330规范的javax.inject.Named注解 。
+ * 以上所述的依据
+ *
  * {@link org.springframework.beans.factory.support.BeanNameGenerator}
  * implementation for bean classes annotated with the
  * {@link org.springframework.stereotype.Component @Component} annotation
@@ -43,7 +51,7 @@ import org.springframework.util.StringUtils;
  * {@link org.springframework.stereotype.Component @Component}.
  *
  * <p>Also supports Java EE 6's {@link javax.annotation.ManagedBean} and
- * JSR-330's {@link javax.inject.Named} annotations, if available. Note that
+ * 's {@link javax.inject.Named} annotations, if available. Note that
  * Spring component annotations always override such standard annotations.
  *
  * <p>If the annotation's value doesn't indicate a bean name, an appropriate
@@ -60,28 +68,39 @@ import org.springframework.util.StringUtils;
  * @see org.springframework.stereotype.Service#value()
  * @see org.springframework.stereotype.Controller#value()
  * @see javax.inject.Named#value()
+ * @see ManagedBean#value()
  */
 public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 
 	/**
+	 * 用于默认{@code AnnotationBeanNameGenerator}实例的便捷常量，用于组件扫描。
 	 * A convenient constant for a default {@code AnnotationBeanNameGenerator} instance,
 	 * as used for component scanning purposes.
 	 * @since 5.2
 	 */
 	public static final AnnotationBeanNameGenerator INSTANCE = new AnnotationBeanNameGenerator();
-
+	/**
+	 * 组件标记类名
+	 * 		被@Comonent标记的类
+	 */
 	private static final String COMPONENT_ANNOTATION_CLASSNAME = "org.springframework.stereotype.Component";
 
 
 	@Override
 	public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
+		//首先判断是不是一个AnnotatedBeanDefinition对象
 		if (definition instanceof AnnotatedBeanDefinition) {
+			//通过注解确定Bean名称
 			String beanName = determineBeanNameFromAnnotation((AnnotatedBeanDefinition) definition);
+			//如果返回的beanName不是“”或null，则直接返回指定的beanName，结束此方法调用
 			if (StringUtils.hasText(beanName)) {
 				// Explicit bean name found.
 				return beanName;
 			}
 		}
+		//如果定义的BeanDefinition不是AnnotatedBeanDefinition类型，或者虽然是AnnotatedBeanDefinition类型，但是根据注解元找不到用户自定义的beanName名称
+		//则执行后备程序：生成一个唯一的默认的beanName
+		//生成规则为java提供的Introspector类中提供的decapitalize()方法返回的值
 		// Fallback: generate a unique default bean name.
 		return buildDefaultBeanName(definition, registry);
 	}
@@ -93,7 +112,9 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	 */
 	@Nullable
 	protected String determineBeanNameFromAnnotation(AnnotatedBeanDefinition annotatedDef) {
+		//获取注解元
 		AnnotationMetadata amd = annotatedDef.getMetadata();
+		//获取注解类型
 		Set<String> types = amd.getAnnotationTypes();
 		String beanName = null;
 		for (String type : types) {
@@ -125,7 +146,7 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	 */
 	protected boolean isStereotypeWithNameValue(String annotationType,
 			Set<String> metaAnnotationTypes, @Nullable Map<String, Object> attributes) {
-
+		//解析的注解类型为@Component 或者 是@Component以及基于@Component派生出来的  或者 是ManagedBean 或者是 Named
 		boolean isStereotype = annotationType.equals(COMPONENT_ANNOTATION_CLASSNAME) ||
 				metaAnnotationTypes.contains(COMPONENT_ANNOTATION_CLASSNAME) ||
 				annotationType.equals("javax.annotation.ManagedBean") ||

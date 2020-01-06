@@ -19,4 +19,9 @@ dependencies {
     compile(project(":spring-core"))
     compile(project(":spring-context"))
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    /**
+     * 使用junit单元测试的java.lang.NoClassDefFoundError: org/hamcrest/SelfDescribing问题解决办法
+     */
+    testCompile group: 'org.hamcrest',name:'hamcrest',version:'2.1'
+    testCompile("javax.inject:javax.inject")
 }

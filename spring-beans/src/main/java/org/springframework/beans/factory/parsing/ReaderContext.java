@@ -20,6 +20,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
 
 /**
+ * 在bean定义读取过程中传递的上下文，封装了所有相关的配置和状态。
  * Context that gets passed along a bean definition reading process,
  * encapsulating all relevant configuration as well as state.
  *
@@ -32,7 +33,9 @@ public class ReaderContext {
 	private final Resource resource;
 
 	private final ProblemReporter problemReporter;
-
+	/**
+	 * 读取事件监听器
+	 */
 	private final ReaderEventListener eventListener;
 
 	private final SourceExtractor sourceExtractor;
@@ -160,8 +163,10 @@ public class ReaderContext {
 
 	/**
 	 * Fire an component-registered event.
+	 * 触发组件注册的事件。
 	 */
 	public void fireComponentRegistered(ComponentDefinition componentDefinition) {
+		//调用ReaderListener的componentRegistered()方法进行组件注册
 		this.eventListener.componentRegistered(componentDefinition);
 	}
 

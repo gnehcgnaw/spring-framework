@@ -38,6 +38,7 @@ import org.springframework.util.StringUtils;
 public abstract class BeanDefinitionReaderUtils {
 
 	/**
+	 * 生成的Bean名称的分隔符。如果类名称或父名称不是唯一的，则将附加“＃1”，“＃2”等，直到名称变为唯一。
 	 * Separator for generated bean names. If a class name or parent name is not
 	 * unique, "#1", "#2" etc will be appended, until the name becomes unique.
 	 */
@@ -121,9 +122,11 @@ public abstract class BeanDefinitionReaderUtils {
 		String id = generatedBeanName;
 		if (isInnerBean) {
 			// Inner bean: generate identity hashcode suffix.
+			// 内部bean：生成身份哈希码后缀。
 			id = generatedBeanName + GENERATED_BEAN_NAME_SEPARATOR + ObjectUtils.getIdentityHexString(definition);
 		}
 		else {
+			// 顶级bean：必要时使用带有唯一后缀的普通类名。
 			// Top-level bean: use plain class name with unique suffix if necessary.
 			return uniqueBeanName(generatedBeanName, registry);
 		}
@@ -144,8 +147,10 @@ public abstract class BeanDefinitionReaderUtils {
 		int counter = -1;
 
 		// Increase counter until the id is unique.
+		// 增加计数器，直到ID唯一为止。
 		while (counter == -1 || registry.containsBeanDefinition(id)) {
 			counter++;
+			// e.g. "com.service.UserService#0"
 			id = beanName + GENERATED_BEAN_NAME_SEPARATOR + counter;
 		}
 		return id;
@@ -166,6 +171,7 @@ public abstract class BeanDefinitionReaderUtils {
 		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
 
 		// Register aliases for bean name, if any.
+		// 注册bean名称的别名（如果有）。
 		String[] aliases = definitionHolder.getAliases();
 		if (aliases != null) {
 			for (String alias : aliases) {

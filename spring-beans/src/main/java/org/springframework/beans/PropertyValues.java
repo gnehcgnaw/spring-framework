@@ -26,6 +26,7 @@ import java.util.stream.StreamSupport;
 import org.springframework.lang.Nullable;
 
 /**
+ * 描述bean定义中的property属性
  * Holder containing one or more {@link PropertyValue} objects,
  * typically comprising one update for a specific target bean.
  *
@@ -37,6 +38,7 @@ import org.springframework.lang.Nullable;
 public interface PropertyValues extends Iterable<PropertyValue> {
 
 	/**
+	 * 在属性值上返回一个{@link Iterator}。
 	 * Return an {@link Iterator} over the property values.
 	 * @since 5.1
 	 */
@@ -46,6 +48,7 @@ public interface PropertyValues extends Iterable<PropertyValue> {
 	}
 
 	/**
+	 * 在属性值上返回一个{@link Spliterator}。
 	 * Return a {@link Spliterator} over the property values.
 	 * @since 5.1
 	 */
@@ -55,6 +58,7 @@ public interface PropertyValues extends Iterable<PropertyValue> {
 	}
 
 	/**
+	 * 返回包含属性值的顺序{@link Stream}。
 	 * Return a sequential {@link Stream} containing the property values.
 	 * @since 5.1
 	 */
@@ -63,14 +67,16 @@ public interface PropertyValues extends Iterable<PropertyValue> {
 	}
 
 	/**
+	 * 返回此对象中保存的PropertyValue对象的数组。
 	 * Return an array of the PropertyValue objects held in this object.
 	 */
 	PropertyValue[] getPropertyValues();
 
 	/**
+	 * 返回具有给定名称的属性值（如果有）。
 	 * Return the property value with the given name, if any.
-	 * @param propertyName the name to search for
-	 * @return the property value, or {@code null} if none
+	 * @param propertyName the name to search for	要搜索的名称
+	 * @return the property value, or {@code null} if none		属性值；如果没有，则为{@code null}
 	 */
 	@Nullable
 	PropertyValue getPropertyValue(String propertyName);
@@ -86,6 +92,7 @@ public interface PropertyValues extends Iterable<PropertyValue> {
 	PropertyValues changesSince(PropertyValues old);
 
 	/**
+	 * 此属性是否有一个属性值（或其他处理条目）？
 	 * Is there a property value (or other processing entry) for this property?
 	 * @param propertyName the name of the property we're interested in
 	 * @return whether there is a property value for this property
@@ -93,6 +100,7 @@ public interface PropertyValues extends Iterable<PropertyValue> {
 	boolean contains(String propertyName);
 
 	/**
+	 * 此持有人是否根本不包含任何PropertyValue对象？
 	 * Does this holder not contain any PropertyValue objects at all?
 	 */
 	boolean isEmpty();

@@ -27,6 +27,7 @@ import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.lang.Nullable;
 
 /**
+ * 基于标准BeanDefinition的ComponentDefinition，它公开了给定的bean定义以及给定bean的内部bean定义和bean引用。
  * ComponentDefinition based on a standard BeanDefinition, exposing the given bean
  * definition as well as inner bean definitions and bean references for the given bean.
  *
@@ -61,29 +62,40 @@ public class BeanComponentDefinition extends BeanDefinitionHolder implements Com
 	}
 
 	/**
+	 * 为给定的bean创建一个新的BeanComponentDefinition。
 	 * Create a new BeanComponentDefinition for the given bean.
 	 * @param beanDefinitionHolder the BeanDefinitionHolder encapsulating
-	 * the bean definition as well as the name of the bean
+	 * the bean definition as well as the name of the bean	封装了Bean定义以及Bean名称的BeanDefinitionHolder
 	 */
 	public BeanComponentDefinition(BeanDefinitionHolder beanDefinitionHolder) {
 		super(beanDefinitionHolder);
-
+		//用于存放内部bean的list集合
 		List<BeanDefinition> innerBeans = new ArrayList<>();
+		//用于存放引用的list集合
 		List<BeanReference> references = new ArrayList<>();
+		//获取当前bean定义的PropertyValues
+		//换而言之：就是获取bean标签中的property子标签对象的集合
 		PropertyValues propertyValues = beanDefinitionHolder.getBeanDefinition().getPropertyValues();
+		//遍历PropertyValues，得到所有的PropertyValue
 		for (PropertyValue propertyValue : propertyValues.getPropertyValues()) {
+			//获取PropertyValue的value值
 			Object value = propertyValue.getValue();
+			//判断当前对象是不是BeanDefinitionHolder
 			if (value instanceof BeanDefinitionHolder) {
 				innerBeans.add(((BeanDefinitionHolder) value).getBeanDefinition());
 			}
+			//判断当前对象是不是BeanDefinition
 			else if (value instanceof BeanDefinition) {
 				innerBeans.add((BeanDefinition) value);
 			}
+			//判断当前对象是不是BeanReference ，即是不是<ref>标签
 			else if (value instanceof BeanReference) {
 				references.add((BeanReference) value);
 			}
 		}
+		//如果bean定义中的property属性包含了其他bean的定义，那么就叫做innerBeanDefinition对象
 		this.innerBeanDefinitions = innerBeans.toArray(new BeanDefinition[0]);
+		//将BeanReference对象的list集合转换为类型为BeanReference的数组
 		this.beanReferences = references.toArray(new BeanReference[0]);
 	}
 

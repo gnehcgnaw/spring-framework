@@ -68,6 +68,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
 
 /**
+ * BeanDefinition解析委托器
  * Stateful delegate class used to parse XML bean definitions.
  * Intended for use by both the main parser and any extension
  * {@link BeanDefinitionParser BeanDefinitionParsers} or
@@ -86,6 +87,10 @@ public class BeanDefinitionParserDelegate {
 
 	public static final String BEANS_NAMESPACE_URI = "http://www.springframework.org/schema/beans";
 
+	/**
+	 * 多值界定符
+	 * 		逗号、分号、空格
+	 */
 	public static final String MULTI_VALUE_ATTRIBUTE_DELIMITERS = ",; ";
 
 	/**
@@ -234,6 +239,9 @@ public class BeanDefinitionParserDelegate {
 	private final ParseState parseState = new ParseState();
 
 	/**
+	 * 存储所有使用的bean名称，以便我们可以在每个* bean元素的基础上实施唯一性。
+	 * 在同一级别的bean元素嵌套中，可能不存在重复的bean id 名称，但是可能会在各个级别之间重复。
+	 *
 	 * Stores all used bean names so we can enforce uniqueness on a per
 	 * beans-element basis. Duplicate bean ids/names may not exist within the
 	 * same level of beans element nesting, but may be duplicated across levels.
@@ -396,12 +404,14 @@ public class BeanDefinitionParserDelegate {
 
 
 	/**
+	 * 解析Bean定义元素
 	 * Parses the supplied {@code <bean>} element. May return {@code null}
 	 * if there were errors during parse. Errors are reported to the
 	 * {@link org.springframework.beans.factory.parsing.ProblemReporter}.
 	 */
 	@Nullable
 	public BeanDefinitionHolder parseBeanDefinitionElement(Element ele) {
+		//默认containingBean为空，也就是不包含嵌套bean
 		return parseBeanDefinitionElement(ele, null);
 	}
 
@@ -412,45 +422,65 @@ public class BeanDefinitionParserDelegate {
 	 */
 	@Nullable
 	public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, @Nullable BeanDefinition containingBean) {
+		//获取<bean>的id属性值
 		String id = ele.getAttribute(ID_ATTRIBUTE);
+		//获取<bean>的name属性值
 		String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);
-
+		//定义一个别名的list集合
 		List<String> aliases = new ArrayList<>();
+		//判断name属性值是否有长度
 		if (StringUtils.hasLength(nameAttr)) {
+			//将nameAttr进行分隔，分隔的标准是：逗号，空格，分号，以及他们的自由组合，分隔原理参照：java.util.StringTokenizer
+			//参见：http://docs.oracle.com/javase/8/docs/api/java/util/StringTokenizer.html
+			//由此也可以证明spring-framework document中的描述：beanName可以定义多个，中间使用逗号、空格、分号或者他们的组合进行分隔：
+			// 		分隔之后得到的String数组的第一个元素，在bean id的属性值不存在的时候，作为beanName的值，数组中其他的元素作为别名；
+			//		但是bean id 如果存在，那么就将该数组中的元素都当成是bean的别名。
+			//参见：https://docs.spring.io/spring/docs/5.2.2.RELEASE/spring-framework-reference/core.html#beans-beanname
 			String[] nameArr = StringUtils.tokenizeToStringArray(nameAttr, MULTI_VALUE_ATTRIBUTE_DELIMITERS);
+			//将分隔之后的String数组都存放到aliases集合中
 			aliases.addAll(Arrays.asList(nameArr));
 		}
-
+		//beanName = bean id 属性值
 		String beanName = id;
+		//如果id不是文本，并且aliases不是空的，那么beanName = aliases集合的第一个元素，
 		if (!StringUtils.hasText(beanName) && !aliases.isEmpty()) {
+			//移除aliases集合中的第一个元素
 			beanName = aliases.remove(0);
 			if (logger.isTraceEnabled()) {
 				logger.trace("No XML 'id' specified - using '" + beanName +
 						"' as bean name and " + aliases + " as aliases");
 			}
 		}
-
+		//判断当前bean标签中是否有嵌套的bean
 		if (containingBean == null) {
+			//校验beanName的唯一性
 			checkNameUniqueness(beanName, aliases, ele);
 		}
-
+		//解析生成BeanDefinition对象
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
+		//判断beanDefinition是否为null
 		if (beanDefinition != null) {
+			//beanDefinition不为null
+			//是否存在beanName，如果不存在正确的beanName，会调用指定的程序生成beanName
 			if (!StringUtils.hasText(beanName)) {
 				try {
+					//是否有嵌套的bean标签
 					if (containingBean != null) {
 						beanName = BeanDefinitionReaderUtils.generateBeanName(
 								beanDefinition, this.readerContext.getRegistry(), true);
 					}
 					else {
+						//调用generateBeanName()方法为指定的beanDefinition生成beanName
 						beanName = this.readerContext.generateBeanName(beanDefinition);
 						// Register an alias for the plain bean class name, if still possible,
 						// if the generator returned the class name plus a suffix.
 						// This is expected for Spring 1.2/2.0 backwards compatibility.
+						//如果仍可能，则为纯bean类名注册一个别名，
 						String beanClassName = beanDefinition.getBeanClassName();
 						if (beanClassName != null &&
 								beanName.startsWith(beanClassName) && beanName.length() > beanClassName.length() &&
 								!this.readerContext.getRegistry().isBeanNameInUse(beanClassName)) {
+							//生成一个默认的别名
 							aliases.add(beanClassName);
 						}
 					}
@@ -464,7 +494,9 @@ public class BeanDefinitionParserDelegate {
 					return null;
 				}
 			}
+			//将别名的list集合转换为String数组
 			String[] aliasesArray = StringUtils.toStringArray(aliases);
+			//返回bdh
 			return new BeanDefinitionHolder(beanDefinition, beanName, aliasesArray);
 		}
 
@@ -493,6 +525,7 @@ public class BeanDefinitionParserDelegate {
 	}
 
 	/**
+	 * 解析bean定义本身，而不考虑名称或别名。如果在解析bean定义期间发生问题，则可能返回{@code null}。
 	 * Parse the bean definition itself, without regard to name or aliases. May return
 	 * {@code null} if problems occurred during the parsing of the bean definition.
 	 */
@@ -1393,6 +1426,7 @@ public class BeanDefinitionParserDelegate {
 
 	/**
 	 * Decorate the given bean definition through a namespace handler, if applicable.
+	 * 如果适用，通过名称空间处理程序装饰给定的bean定义。
 	 * @param ele the current element
 	 * @param originalDef the current bean definition
 	 * @return the decorated bean definition
@@ -1527,6 +1561,7 @@ public class BeanDefinitionParserDelegate {
 	}
 
 	/**
+	 * 确定给定节点是否指示默认名称空间。
 	 * Determine whether the given node indicates the default namespace.
 	 */
 	public boolean isDefaultNamespace(Node node) {

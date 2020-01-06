@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean class="com.beatshadow.example.dependencies.dependenciesandconfigurationindetail.innerbean.OutBean">
+		<property name="outBeanId" value="0"/>
+		<property name="innerBean1">
+			<bean class="com.beatshadow.example.dependencies.dependenciesandconfigurationindetail.innerbean.InnerBean1" id="innerBean1" name="outBean#InnerBean1"/>
+		</property>
+		<property name="innerBean2">
+			<bean class="com.beatshadow.example.dependencies.dependenciesandconfigurationindetail.innerbean.InnerBean2"/>
+		</property>
+	</bean>
+
+	<bean class="com.beatshadow.example.dependencies.dependenciesandconfigurationindetail.innerbean.InnerBean1">
+		<constructor-arg name="innerBeanId1" value="1" index="0"/>
+	</bean>
+
+
+	<bean class="com.beatshadow.example.dependencies.dependenciesandconfigurationindetail.innerbean.InnerBean2">
+		<constructor-arg name="innerBeanId2" value="2" index="0"/>
+	</bean>
+
+
+</beans>

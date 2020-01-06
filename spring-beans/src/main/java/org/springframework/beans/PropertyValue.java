@@ -23,11 +23,15 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
+ *
+ * 持有单个bean属性的信息和值的对象。
+ * 在这里使用对象，而不是仅将所有属性存储在以属性名称为键的映射中，这样可以提供更大的灵活性，并且可以以优化的方式处理索引属性等。
  * Object to hold information and value for an individual bean property.
  * Using an object here, rather than just storing all properties in
  * a map keyed by property name, allows for more flexibility, and the
  * ability to handle indexed properties etc in an optimized way.
  *
+ * 请注意，该值不必是最终所需的类型： {@link BeanWrapper}实现应处理任何必要的转换，由于此对象对将应用于的对象一无所知。
  * <p>Note that the value doesn't need to be the final required type:
  * A {@link BeanWrapper} implementation should handle any necessary conversion,
  * as this object doesn't know anything about the objects it will be applied to.
@@ -64,6 +68,7 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 
 
 	/**
+	 * 创建一个新的PropertyValue实例
 	 * Create a new PropertyValue instance.
 	 * @param name the name of the property (never {@code null})
 	 * @param value the value of the property (possibly before type conversion)
@@ -117,6 +122,7 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 	}
 
 	/**
+	 * 返回属性的值。
 	 * Return the value of the property.
 	 * <p>Note that type conversion will <i>not</i> have occurred here.
 	 * It is the responsibility of the BeanWrapper implementation to
